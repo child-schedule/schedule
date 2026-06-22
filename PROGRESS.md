@@ -18,12 +18,14 @@
 
 - Layer 9: Schedule grid rendering. `ScheduleGrid` renders one `ScheduleRow` per classroom-teacher pairing × 22 half-hour `TimeBlock` cells (7:00 AM–6:00 PM, via `timeSlots.js`). Each cell finds the row's block overlapping that half-hour (if any) and colors via CSS classes driven by `colorMap.js` labels (no inline styles, per the harness constraint). Empty schedule shows a plain empty-state message. `SchedulePage` now renders the real grid instead of placeholder text. Verified: lint/build clean; seeded a real row with a green block (08:00-09:00) and orange block (12:00-12:30), replicated the exact slot-generation + slot-to-block matching logic against that data — 22 slots total, exactly the 3 expected non-white slots correct, rest white. Could not verify actual rendered colors in a browser (same Chromium gap as prior frontend layers). Committed: `feat: schedule grid rendering`.
 
+- Layer 10: Drag-to-select. `useDragSelect` hook: mousedown sets the anchor, mouseenter (while dragging) extends within the same row only, a global window mouseup finalizes and calls back with the normalized (low, high) index range. `TimeBlock` shows a `time-block--selected` outline while dragging. `ScheduleGrid` resolves the finalized range to real start/end times and opens `AssignmentDropdown` (currently a stub showing row + range; full three-option UI is Layer 11) with that selection. Verified: lint/build clean, and directly tested the range math (forward/backward drag, single click, cross-row isolation, start/end normalization) — all correct. **Did not verify actual browser drag/highlight/dropdown-open behavior** — user agreed to manually test this layer (and future interactive layers) themselves given the Chromium/sudo gap; flag clearly if they report something broken. Committed: `feat: drag to select`.
+
 ## Current Step
-- Starting Layer 10: Drag-to-select — mousedown/mouseover/mouseup across a row's time-slot cells, highlight during drag, open the assignment dropdown on mouseup with the selected range + row context.
+- Starting Layer 11: Assignment dropdown + inline add — three options (Teacher + Classroom / Break / Meet Front Office), independent Teacher/Classroom selector panels with inline "add new" forms, confirm flow, POST to API on confirm.
 
 ## Next Steps
-- Layer 10: Drag-to-select.
-- Layers 11–13: Assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
+- Layer 11: Assignment dropdown and inline add.
+- Layers 12–13: Edit/delete blocks, conflict error handling.
 - Layer 14: Final verification against Phase 1 checklist.
 
 ## Blockers
