@@ -21,6 +21,7 @@
 
 .schedule-row__slots {
   display: flex;
+  user-select: none;
 }
 
 .schedule-grid__slot-label {
@@ -54,6 +55,11 @@
 
 .time-block--white {
   background: #ffffff;
+}
+
+.time-block--selected {
+  outline: 2px solid #2f6f4f;
+  outline-offset: -2px;
 }
 
 .schedule-grid__empty {

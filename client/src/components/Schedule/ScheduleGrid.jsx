@@ -1,9 +1,27 @@
+import { useState } from 'react';
 import ScheduleRow from './ScheduleRow';
+import AssignmentDropdown from '../Dropdown/AssignmentDropdown';
+import { useDragSelect } from '../../hooks/useDragSelect';
 import { generateTimeSlots } from '../../utils/timeSlots';
 import './ScheduleGrid.css';
 
 function ScheduleGrid({ rows }) {
   const slots = generateTimeSlots();
+  const [pendingSelection, setPendingSelection] = useState(null);
+
+  function handleSelectionComplete(rowId, startIndex, endIndex) {
+    const row = rows.find((r) => r.rowId === rowId);
+    if (!row) return;
+
+    setPendingSelection({
+      rowId,
+      rowLabel: row.rowLabel,
+      startTime: slots[startIndex].start,
+      endTime: slots[endIndex].end,
+    });
+  }
+
+  const { startDrag, extendDrag, isSlotSelected } = useDragSelect(handleSelectionComplete);
 
   if (rows.length === 0) {
     return <p className="schedule-grid__empty">No teachers assigned yet for this date.</p>;
@@ -22,8 +40,21 @@ function ScheduleGrid({ rows }) {
         </div>
       </div>
       {rows.map((row) => (
-        <ScheduleRow key={row.rowId} rowLabel={row.rowLabel} blocks={row.blocks} slots={slots} />
+        <ScheduleRow
+          key={row.rowId}
+          rowLabel={row.rowLabel}
+          blocks={row.blocks}
+          slots={slots}
+          onSlotMouseDown={(index) => startDrag(row.rowId, index)}
+          onSlotMouseEnter={(index) => extendDrag(row.rowId, index)}
+          isSlotSelected={(index) => isSlotSelected(row.rowId, index)}
+        />
       ))}
+      <AssignmentDropdown
+        isOpen={Boolean(pendingSelection)}
+        selection={pendingSelection}
+        onClose={() => setPendingSelection(null)}
+      />
     </div>
   );
 }

@@ -12,14 +12,22 @@ function findBlockForSlot(blocks, slot) {
   });
 }
 
-function ScheduleRow({ rowLabel, blocks, slots }) {
+function ScheduleRow({ rowLabel, blocks, slots, onSlotMouseDown, onSlotMouseEnter, isSlotSelected }) {
   return (
     <div className="schedule-row">
       <div className="schedule-row__label">{rowLabel}</div>
       <div className="schedule-row__slots">
-        {slots.map((slot) => {
+        {slots.map((slot, index) => {
           const block = findBlockForSlot(blocks, slot);
-          return <TimeBlock key={slot.start} status={block ? block.status : null} />;
+          return (
+            <TimeBlock
+              key={slot.start}
+              status={block ? block.status : null}
+              isSelected={isSlotSelected(index)}
+              onMouseDown={() => onSlotMouseDown(index)}
+              onMouseEnter={() => onSlotMouseEnter(index)}
+            />
+          );
         })}
       </div>
     </div>
