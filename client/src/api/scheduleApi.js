@@ -12,3 +12,8 @@ export async function fetchSchedule(date) {
     throw err;
   }
 }
+
+export async function copySchedule(date) {
+  const { data } = await axios.post(`${API_BASE_URL}/api/schedule/${date}/copy`);
+  return data;
+}

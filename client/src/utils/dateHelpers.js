@@ -16,3 +16,10 @@ export function getFirstDayOfWeek(year, month) {
 export function getMonthLabel(year, month) {
   return new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 }
+
+export function getPreviousDateKey(dateKey) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  date.setDate(date.getDate() - 1);
+  return formatDateKey(date);
+}
