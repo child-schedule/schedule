@@ -14,12 +14,14 @@
 
 - Layer 7: Calendar page — `CalendarPage` (month state + prev/next nav), `CalendarGrid` (weekday headers + day tiles, leading blanks for offset), `CalendarDay` (a `Link` to `/schedule/:date`, dot indicator if scheduled). `scheduleApi.js` added (`fetchSchedule`, treats 404 as "no schedule"). No backend list-by-month endpoint exists, so the page checks every day in the visible month individually against `GET /api/schedule/:date` — ~30 requests per view, accepted as fine at this scale rather than adding an undocumented endpoint. `dateHelpers.js` holds days-in-month/first-weekday/month-label math. Verified: lint/build clean; replicated the exact fetch-and-aggregate logic against the live backend with one schedule seeded on 2026-06-15 — correctly resolved to that one date out of 30; date-math helpers checked directly (leap year, weekday alignment). Did not verify actual rendered grid/clicks in a browser (same Chromium gap as Layer 6). Committed: `feat: calendar page`.
 
+- Layer 8: Schedule page shell + copy-previous-day modal. `useSchedule(dateKey)` hook fetches the schedule for the date; if none exists, checks the previous day and sets `showCopyModal` accordingly. `CopyDayModal` (Yes - Copy / No - Start Fresh) built on a new generic `components/common/Modal` wrapper (reusable for later modals). `getPreviousDateKey` added to `dateHelpers.js`, `copySchedule` added to `scheduleApi.js`. Verified: lint/build clean; replicated the hook's exact decision logic against the live backend for all three cases (exists / none-but-previous-has-data / none-and-previous-empty), all correct; exercised the real Yes-Copy path end to end (seeded row copied to new date with fresh rowId). Could not verify modal rendering in an actual browser (same Chromium gap as Layers 6–7). Committed: `feat: schedule page shell and copy modal`.
+
 ## Current Step
-- Starting Layer 8: Schedule page shell + copy-previous-day modal.
+- Starting Layer 9: Schedule grid rendering — rows (classroom-teacher pairings) and time-slot columns (7:00 AM–6:00 PM, 30-min intervals), colored by block status.
 
 ## Next Steps
-- Layer 8: Schedule page shell — load schedule for the date, check previous day, show CopyDayModal if previous day has data and current doesn't.
-- Layers 9–13: Schedule grid, drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
+- Layer 9: Schedule grid rendering.
+- Layers 10–13: Drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
 - Layer 14: Final verification against Phase 1 checklist.
 
 ## Blockers
