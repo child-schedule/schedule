@@ -10,18 +10,21 @@
 
 - Layer 5: Frontend scaffold and routing — removed Vite/React demo boilerplate (logos, hero image, demo CSS, icon sprite), set up React Router (`/` → `CalendarPage`, `/schedule/:date` → `SchedulePage`, both placeholders for now), trimmed `index.css` to a minimal neutral reset (no more default purple accent). Verified: `npm run build` and `npm run lint` clean, dev server returns 200 for both routes. Committed: `feat: react scaffold and routing`.
 
+- Layer 6: `TeachersContext` / `ClassroomsContext` — each fetches its list from the Layer 4 API on mount (`isLoading`/`error` tracked) and exposes an `add*` function that posts and merges the response into state. Both wrap the app in `App.jsx`, above the router. `api/teachersApi.js` / `api/classroomsApi.js` hold the axios calls, reading `VITE_API_BASE_URL` from `.env`. Verified the underlying contract directly (axios call matching what the contexts make on mount) against the live, seeded backend — confirmed correct shape and data. Could not get full in-browser confirmation (see Blockers below). `npm run build` and `npm run lint` clean. Committed: `feat: global context for teachers and classrooms`.
+
 ## Current Step
-- Starting Layer 6: TeachersContext / ClassroomsContext — fetch from the Layer 4 API on mount, expose add functions.
+- Starting Layer 7: Calendar page — monthly grid of clickable date tiles, visual indicator on dates with an existing schedule, navigates to `/schedule/:date`.
 
 ## Next Steps
-- Layer 6: TeachersContext / ClassroomsContext.
-- Layers 7–13: Calendar page, schedule page shell + copy modal, schedule grid, drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
+- Layer 7: Calendar page.
+- Layers 8–13: Schedule page shell + copy modal, schedule grid, drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
 - Layer 14: Final verification against Phase 1 checklist.
 
 ## Blockers
 - MongoDB was not installed in WSL initially (Ubuntu 26.04 "resolute" too new for official MongoDB apt repo). Resolved: installed using the 24.04 "noble" package repo as a workaround. mongod also failed to fork initially because /var/log wasn't writable by the user — resolved by using a logpath under the user's home directory (~/mongodb-logs/mongod.log). MongoDB 8.0.26 confirmed running via `mongosh --eval "db.version()"`.
 - Project lives under `/mnt/c/...` (Windows drive mounted into WSL via drvfs). `require('mongoose')` alone can take ~15-20s the first call because drvfs is slow for the many small file reads under `node_modules`. Not a code bug — budget extra time (~30s) when verifying server startup; a short timeout looking like a hang is not necessarily a failure.
 - Process note: Layer 2's code (`server.js`, `db.js`) had been written in a prior session but left untested and uncommitted, and this file wasn't updated to reflect it. Caught and corrected this session: verified the connection works, then committed. Going forward, commit immediately after each layer is verified — don't let code sit uncommitted across sessions.
+- No in-browser/console-error verification is possible in this WSL container as currently provisioned: headless Chromium (via Playwright, which itself installs without sudo) fails to launch — `chrome-headless-shell: error while loading shared libraries: libnspr4.so: cannot open shared object file`. Fixing this needs `npx playwright install --with-deps chromium` (or manually apt-installing the missing libs), which requires sudo and an interactive password, same blocker as the original MongoDB install. Until the user runs that themselves, frontend layers are verified via: build/lint clean, and direct verification of the data layer (API calls) the UI relies on — not actual rendered DOM/console output. Flag this explicitly when a layer's correctness genuinely depends on browser rendering (e.g., drag-to-select in Layer 10) rather than just data flow.
 
 ## Notes for future sessions
 - See `../SUMMARY.md` (one level up, in the `child care` folder) for which spec/harness files govern this project — `childcare-scheduling-project-plan.md` + `HARNESSS.md` (NOT the CLAUDE.md/HARNESS.md pair, which is a different, unrelated project).
