@@ -4,11 +4,12 @@
 - Layer 1: Project scaffold — root folder, git init, server/ and client/ folder structures created, server deps installed (express, mongoose, cors, dotenv, uuid, nodemon), client deps installed (Vite React template + react-router-dom, axios, dayjs), .env files created for both server and client, root .gitignore created. Committed: `chore: project scaffold`.
 - Layer 2: Backend MongoDB connection — `server/src/config/db.js` (mongoose.connect) + `server/server.js` (Express app, connects to MongoDB before listening). Verified by running `node server.js` directly: logs `MongoDB connected` then `Server running on port 5000` against local mongod. Committed: `feat: mongodb connection`.
 
+- Layer 3: Mongoose models — `Teacher` (name, createdAt), `Classroom` (name, createdAt), `Schedule` (date string unique, nested rows[] with teacherId/classroomId/rowLabel, each row's blocks[] with startTime/endTime/status enum green|yellow|orange). Verified with a live create/read/cleanup of all three models against local MongoDB (not just schema-shape check). Committed: `feat: mongoose models`.
+
 ## Current Step
-- Starting Layer 3: Mongoose models (Teacher, Classroom, Schedule) per the schemas in `childcare-scheduling-project-plan.md`.
+- Starting Layer 4: API routes/controllers for Teacher, Classroom, Schedule + conflict detection middleware (green/yellow blocks only, orange exempt) + global error handler.
 
 ## Next Steps
-- Layer 3: Mongoose models (Teacher, Classroom, Schedule).
 - Layer 4: API routes/controllers + conflict detection middleware.
 - Layers 5–13: Frontend (routing, context, calendar, schedule grid, drag-select, dropdown/inline-add, edit/delete, conflict UI).
 - Layer 14: Final verification against Phase 1 checklist.
