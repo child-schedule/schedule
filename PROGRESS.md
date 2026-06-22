@@ -8,11 +8,12 @@
 
 - Layer 4: API routes/controllers + conflict detection middleware + global error handler. Teacher/Classroom: GET all, POST one-or-many (`{name}` or `{names:[]}`). Schedule: GET by date, POST create, POST copy (clones previous day's rows/blocks with fresh ids), POST add row (dedupes existing teacher+classroom pairing), PUT add-or-update block (conflict-checked), DELETE block, DELETE row. `conflictCheck` middleware blocks overlapping green/yellow blocks for the same teacher across rows (409 with teacher/classroom/time in the message), exempts orange entirely. Moved Express setup out of `server.js` into `src/app.js` (server.js is now just the entry point) to match the spec's folder structure. Verified every endpoint manually with curl against a live server + MongoDB, including the conflict 409, the orange exemption, edit-in-place, delete, and copy-previous-day — all test data cleaned up after. Committed: `feat: api routes and controllers`.
 
+- Layer 5: Frontend scaffold and routing — removed Vite/React demo boilerplate (logos, hero image, demo CSS, icon sprite), set up React Router (`/` → `CalendarPage`, `/schedule/:date` → `SchedulePage`, both placeholders for now), trimmed `index.css` to a minimal neutral reset (no more default purple accent). Verified: `npm run build` and `npm run lint` clean, dev server returns 200 for both routes. Committed: `feat: react scaffold and routing`.
+
 ## Current Step
-- Starting Layer 5: Frontend scaffold and routing — clean up Vite boilerplate, set up React Router with `/` (calendar) and `/schedule/:date` (schedule page), empty placeholder page components.
+- Starting Layer 6: TeachersContext / ClassroomsContext — fetch from the Layer 4 API on mount, expose add functions.
 
 ## Next Steps
-- Layer 5: Frontend scaffold and routing.
 - Layer 6: TeachersContext / ClassroomsContext.
 - Layers 7–13: Calendar page, schedule page shell + copy modal, schedule grid, drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
 - Layer 14: Final verification against Phase 1 checklist.
