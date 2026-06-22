@@ -12,12 +12,14 @@
 
 - Layer 6: `TeachersContext` / `ClassroomsContext` — each fetches its list from the Layer 4 API on mount (`isLoading`/`error` tracked) and exposes an `add*` function that posts and merges the response into state. Both wrap the app in `App.jsx`, above the router. `api/teachersApi.js` / `api/classroomsApi.js` hold the axios calls, reading `VITE_API_BASE_URL` from `.env`. Verified the underlying contract directly (axios call matching what the contexts make on mount) against the live, seeded backend — confirmed correct shape and data. Could not get full in-browser confirmation (see Blockers below). `npm run build` and `npm run lint` clean. Committed: `feat: global context for teachers and classrooms`.
 
+- Layer 7: Calendar page — `CalendarPage` (month state + prev/next nav), `CalendarGrid` (weekday headers + day tiles, leading blanks for offset), `CalendarDay` (a `Link` to `/schedule/:date`, dot indicator if scheduled). `scheduleApi.js` added (`fetchSchedule`, treats 404 as "no schedule"). No backend list-by-month endpoint exists, so the page checks every day in the visible month individually against `GET /api/schedule/:date` — ~30 requests per view, accepted as fine at this scale rather than adding an undocumented endpoint. `dateHelpers.js` holds days-in-month/first-weekday/month-label math. Verified: lint/build clean; replicated the exact fetch-and-aggregate logic against the live backend with one schedule seeded on 2026-06-15 — correctly resolved to that one date out of 30; date-math helpers checked directly (leap year, weekday alignment). Did not verify actual rendered grid/clicks in a browser (same Chromium gap as Layer 6). Committed: `feat: calendar page`.
+
 ## Current Step
-- Starting Layer 7: Calendar page — monthly grid of clickable date tiles, visual indicator on dates with an existing schedule, navigates to `/schedule/:date`.
+- Starting Layer 8: Schedule page shell + copy-previous-day modal.
 
 ## Next Steps
-- Layer 7: Calendar page.
-- Layers 8–13: Schedule page shell + copy modal, schedule grid, drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
+- Layer 8: Schedule page shell — load schedule for the date, check previous day, show CopyDayModal if previous day has data and current doesn't.
+- Layers 9–13: Schedule grid, drag-to-select, assignment dropdown/inline-add, edit/delete blocks, conflict error handling.
 - Layer 14: Final verification against Phase 1 checklist.
 
 ## Blockers
