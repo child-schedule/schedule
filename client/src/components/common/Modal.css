@@ -6,15 +6,41 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
+  animation: modal-overlay-fade 0.15s ease-out;
 }
 
 .modal {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 1.5rem;
   max-width: 420px;
   width: calc(100% - 2rem);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  animation: modal-pop 0.18s ease-out;
+}
+
+.modal--wide {
+  max-width: 640px;
+}
+
+@keyframes modal-overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-actions {

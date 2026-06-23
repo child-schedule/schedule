@@ -17,3 +17,13 @@ export async function copySchedule(date) {
   const { data } = await axios.post(`${API_BASE_URL}/api/schedule/${date}/copy`);
   return data;
 }
+
+export async function addRow(date, teacherId, classroomId) {
+  const { data } = await axios.post(`${API_BASE_URL}/api/schedule/${date}/row`, { teacherId, classroomId });
+  return data;
+}
+
+export async function saveBlock(date, rowId, payload) {
+  const { data } = await axios.put(`${API_BASE_URL}/api/schedule/${date}/row/${rowId}/block`, payload);
+  return data;
+}

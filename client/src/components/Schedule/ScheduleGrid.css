@@ -1,6 +1,8 @@
 .schedule-grid {
   overflow-x: auto;
   max-width: 100%;
+  border: 1px solid #e3e4e8;
+  border-radius: 10px;
 }
 
 .schedule-grid__header,
@@ -9,14 +11,26 @@
   align-items: stretch;
 }
 
+.schedule-grid__header {
+  position: sticky;
+  top: 0;
+  background: #fafafa;
+  z-index: 1;
+}
+
 .schedule-row__label {
-  flex: 0 0 180px;
-  padding: 0.4rem 0.6rem;
-  font-size: 0.85rem;
+  flex: 0 0 200px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  border: 1px solid #e3e4e8;
+  border-bottom: 1px solid #e3e4e8;
+  border-right: 1px solid #e3e4e8;
   display: flex;
   align-items: center;
+  background: #fff;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
 .schedule-row__slots {
@@ -25,44 +39,75 @@
 }
 
 .schedule-grid__slot-label {
-  flex: 0 0 32px;
-  font-size: 0.6rem;
+  flex: 0 0 44px;
+  font-size: 0.7rem;
   text-align: center;
-  padding: 0.4rem 0;
-  color: #5a5d66;
-  border: 1px solid #e3e4e8;
-  border-left: none;
+  padding: 0.55rem 0;
+  color: #767a85;
+  border-bottom: 1px solid #e3e4e8;
+  border-right: 1px solid #eceef1;
+}
+
+.schedule-grid__slot-label--hour {
+  font-weight: 600;
+  color: #2c2e34;
+  border-right: 1px solid #d0d2d8;
 }
 
 .time-block {
-  flex: 0 0 32px;
-  height: 32px;
-  border: 1px solid #e3e4e8;
-  border-left: none;
+  flex: 0 0 44px;
+  height: 44px;
+  border-bottom: 1px solid #e3e4e8;
+  border-right: 1px solid #eceef1;
+  cursor: pointer;
+  transition: background 0.1s ease, filter 0.1s ease;
+}
+
+.time-block:hover {
+  filter: brightness(0.96);
 }
 
 .time-block--green {
-  background: #3a9d5d;
+  background: #4caf6f;
 }
 
 .time-block--yellow {
-  background: #e8b93f;
+  background: #f0c14b;
 }
 
 .time-block--orange {
-  background: #e3812d;
+  background: #ed8f3c;
 }
 
 .time-block--white {
   background: #ffffff;
 }
 
+.time-block--white:hover {
+  background: #f2f7f4;
+}
+
 .time-block--selected {
   outline: 2px solid #2f6f4f;
   outline-offset: -2px;
+  background: #cfe8d8;
+}
+
+.schedule-row--placeholder .schedule-row__label {
+  font-style: italic;
+  color: #5a8a6c;
+}
+
+.schedule-row--placeholder .time-block--white {
+  background: repeating-linear-gradient(45deg, #fbfbfc, #fbfbfc 6px, #f1f4f2 6px, #f1f4f2 12px);
+}
+
+.schedule-row--placeholder .time-block--white:hover {
+  background: #eaf4ee;
 }
 
 .schedule-grid__empty {
   color: #5a5d66;
   font-style: italic;
+  padding: 1rem;
 }

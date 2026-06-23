@@ -49,5 +49,19 @@ export function useSchedule(dateKey) {
     setShowCopyModal(false);
   }, []);
 
-  return { schedule, isLoading, showCopyModal, previousDateKey, copyFromPrevious, startFresh };
+  // Lets callers (e.g. the assignment dropdown) sync local state after a
+  // row/block mutation without refetching from the server.
+  const applyScheduleUpdate = useCallback((updated) => {
+    setSchedule(updated);
+  }, []);
+
+  return {
+    schedule,
+    isLoading,
+    showCopyModal,
+    previousDateKey,
+    copyFromPrevious,
+    startFresh,
+    applyScheduleUpdate,
+  };
 }

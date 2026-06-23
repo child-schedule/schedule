@@ -21,3 +21,13 @@ export function generateTimeSlots() {
   }
   return slots;
 }
+
+// Display-only 12-hour formatting (e.g. "13:00" -> "1 PM", "13:30" -> "1:30 PM").
+// Storage/comparison everywhere else stays 24-hour "HH:MM" per the schema.
+export function formatDisplayTime(time) {
+  const [hoursStr, minutes] = time.split(':');
+  let hours = Number(hoursStr) % 12;
+  if (hours === 0) hours = 12;
+  const period = Number(hoursStr) >= 12 ? 'PM' : 'AM';
+  return minutes === '00' ? `${hours} ${period}` : `${hours}:${minutes} ${period}`;
+}

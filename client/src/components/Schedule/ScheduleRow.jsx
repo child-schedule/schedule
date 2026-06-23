@@ -12,9 +12,17 @@ function findBlockForSlot(blocks, slot) {
   });
 }
 
-function ScheduleRow({ rowLabel, blocks, slots, onSlotMouseDown, onSlotMouseEnter, isSlotSelected }) {
+function ScheduleRow({
+  rowLabel,
+  blocks,
+  slots,
+  isPlaceholder,
+  onSlotMouseDown,
+  onSlotMouseEnter,
+  isSlotSelected,
+}) {
   return (
-    <div className="schedule-row">
+    <div className={`schedule-row${isPlaceholder ? ' schedule-row--placeholder' : ''}`}>
       <div className="schedule-row__label">{rowLabel}</div>
       <div className="schedule-row__slots">
         {slots.map((slot, index) => {
