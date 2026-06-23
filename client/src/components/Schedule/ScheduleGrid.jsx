@@ -105,6 +105,9 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
               </div>
             );
           })}
+          <div className="schedule-grid__end-cap schedule-grid__end-cap--label">
+            {formatDisplayTime(slots[slots.length - 1].end)}
+          </div>
         </div>
       </div>
 

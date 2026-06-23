@@ -55,8 +55,11 @@
 - Verified lint/build clean, and confirmed via curl that the Vite dev server actually picked up the CSS change live through HMR this time (the `usePolling` fix from the previous round is working as intended — no restart was needed).
 - Not yet re-verified in the browser.
 
+## Current Step (continued) — closing time (6 PM) wasn't shown
+- Each header label marks a slot's *start* time, so the last column (5:30–6:00) was only ever labeled "5:30" — 6:00 PM never appeared anywhere since no slot starts there (slots run 7:00 through 17:30). Added a small fixed-width `schedule-grid__end-cap` cell after the last column in both the header (showing the closing boundary, `formatDisplayTime(slots.at(-1).end)` → "6 PM") and every row (an unlabeled filler so columns still line up between the header and the rows). Confirmed live via HMR.
+
 ## Next Steps
-- First: get the user's browser re-verification (the scroll-removal fix, plus everything from the previous round — block edit/delete, teacher/classroom delete, visual design). Fix anything reported before moving on.
+- First: get the user's browser re-verification (closing-time label, the scroll-removal fix, plus everything from the previous round — block edit/delete, teacher/classroom delete, visual design). Fix anything reported before moving on.
 - Layer 13: client-side conflict pre-check before submit + a dedicated `ErrorToast` component, on top of the inline modal error already wired up in Layer 11/12.
 - Layer 14: Final verification against Phase 1 checklist.
 

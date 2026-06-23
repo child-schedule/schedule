@@ -76,6 +76,29 @@
   transition: background 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
 }
 
+/* Marks the closing boundary (6 PM) after the last half-hour column — every
+   other label marks a slot's start time, so the grid's final edge otherwise
+   never gets a label of its own. */
+.schedule-grid__end-cap {
+  flex: 0 0 36px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.schedule-row .schedule-grid__end-cap {
+  height: 52px;
+  background: var(--color-surface);
+}
+
+.schedule-grid__end-cap--label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.7rem 0.1rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .time-block:hover {
   filter: brightness(0.96);
   box-shadow: inset 0 0 0 2px rgba(47, 111, 79, 0.25);

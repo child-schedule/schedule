@@ -26,6 +26,7 @@ function ScheduleRow({
             />
           );
         })}
+        <div className="schedule-grid__end-cap" />
       </div>
     </div>
   );
