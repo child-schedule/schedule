@@ -1,5 +1,6 @@
 const express = require('express');
 const { checkBlockConflict } = require('../middleware/conflictCheck');
+const validateDateParam = require('../middleware/validateDateParam');
 const {
   getSchedule,
   createSchedule,
@@ -12,6 +13,8 @@ const {
 } = require('../controllers/scheduleController');
 
 const router = express.Router();
+
+router.param('date', validateDateParam);
 
 router.get('/:date', getSchedule);
 router.post('/:date', createSchedule);

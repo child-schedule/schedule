@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Schedule = require('../models/Schedule');
 const Teacher = require('../models/Teacher');
 const Classroom = require('../models/Classroom');
@@ -82,6 +83,9 @@ async function addRow(req, res, next) {
     const { teacherId, classroomId } = req.body;
     if (!teacherId || !classroomId) {
       return res.status(400).json({ error: 'teacherId and classroomId are required' });
+    }
+    if (!mongoose.isValidObjectId(teacherId) || !mongoose.isValidObjectId(classroomId)) {
+      return res.status(400).json({ error: 'teacherId and classroomId must be valid ids' });
     }
 
     const [teacher, classroom] = await Promise.all([
