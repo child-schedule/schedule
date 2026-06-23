@@ -3,8 +3,7 @@
 }
 
 .schedule-grid {
-  overflow-x: auto;
-  max-width: 100%;
+  width: 100%;
   border: 1px solid var(--color-border);
   border-radius: 14px;
   box-shadow: var(--shadow-card);
@@ -15,6 +14,7 @@
 .schedule-row {
   display: flex;
   align-items: stretch;
+  width: 100%;
 }
 
 .schedule-grid__header {
@@ -26,9 +26,9 @@
 }
 
 .schedule-row__label {
-  flex: 0 0 220px;
-  padding: 0.75rem 1.1rem;
-  font-size: 0.95rem;
+  flex: 0 0 180px;
+  padding: 0.75rem 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
@@ -42,18 +42,22 @@
 
 .schedule-row__slots {
   display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
   user-select: none;
 }
 
 .schedule-grid__slot-label {
-  flex: 0 0 56px;
-  font-size: 0.72rem;
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 0.68rem;
   text-align: center;
-  padding: 0.7rem 0.2rem;
+  padding: 0.7rem 0.1rem;
   color: var(--color-text-muted);
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid #eceef1;
   white-space: nowrap;
+  overflow: hidden;
 }
 
 .schedule-grid__slot-label--hour {
@@ -63,7 +67,8 @@
 }
 
 .time-block {
-  flex: 0 0 56px;
+  flex: 1 1 0;
+  min-width: 0;
   height: 52px;
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid #eceef1;

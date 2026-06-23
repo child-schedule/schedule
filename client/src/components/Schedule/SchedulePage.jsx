@@ -29,7 +29,7 @@ function SchedulePage() {
   return (
     <>
       <AppHeader />
-      <main>
+      <main className="schedule-page">
         <Link to="/" className="back-link">
           ‹ Calendar
         </Link>

@@ -50,8 +50,13 @@
 - **Not yet re-verified in the browser** — waiting on the user to hard-refresh and re-test: wider/labeled grid, page styling, block edit/delete, and teacher/classroom delete.
 - Found while restarting: a teacher "lila" now exists in the database (created today, presumably from the user's own testing attempts against the stale frontend) — left untouched, it's real interaction data, not test data.
 
+## Current Step (continued) — removed the grid's horizontal scroll
+- User reported the grid's left/right scrollbar made dragging difficult. Switched `ScheduleGrid.css` from fixed-width columns (`flex: 0 0 56px`, which made 22 columns + label wider than the container) to flexible columns (`flex: 1 1 0; min-width: 0`) that always fill the available width — no more `overflow-x`. The schedule page's `<main>` also got a wider container (`main.schedule-page { max-width: 1500px }` in `index.css`) so columns have enough room to stay legible at this width.
+- Verified lint/build clean, and confirmed via curl that the Vite dev server actually picked up the CSS change live through HMR this time (the `usePolling` fix from the previous round is working as intended — no restart was needed).
+- Not yet re-verified in the browser.
+
 ## Next Steps
-- First: get the user's browser re-verification of everything above (hard refresh required, Ctrl+Shift+R, since the browser likely also cached the old JS bundle on top of the Vite watcher issue). Fix anything reported before moving on.
+- First: get the user's browser re-verification (the scroll-removal fix, plus everything from the previous round — block edit/delete, teacher/classroom delete, visual design). Fix anything reported before moving on.
 - Layer 13: client-side conflict pre-check before submit + a dedicated `ErrorToast` component, on top of the inline modal error already wired up in Layer 11/12.
 - Layer 14: Final verification against Phase 1 checklist.
 
