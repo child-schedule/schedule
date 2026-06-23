@@ -11,6 +11,9 @@ function ScheduleRow({
   isSlotSelected,
   onDeleteRow,
 }) {
+  const lastIndex = slots.length - 1;
+  const lastBlock = findBlockForSlot(blocks, slots[lastIndex]);
+
   return (
     <div className={`schedule-row${isPlaceholder ? ' schedule-row--placeholder' : ''}`}>
       <div className="schedule-row__label">
@@ -40,7 +43,15 @@ function ScheduleRow({
             />
           );
         })}
-        <div className="schedule-grid__end-cap" />
+        {/* Visual continuation of the last column (so the "6 PM" boundary
+            marker is draggable too, instead of being dead space). */}
+        <div
+          className={`schedule-grid__end-cap time-block--${lastBlock ? lastBlock.status : 'white'}${
+            isSlotSelected(lastIndex) ? ' time-block--selected' : ''
+          }`}
+          onMouseDown={() => onSlotMouseDown(lastIndex)}
+          onMouseEnter={() => onSlotMouseEnter(lastIndex)}
+        />
       </div>
     </div>
   );

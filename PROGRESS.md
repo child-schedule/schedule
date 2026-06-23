@@ -66,8 +66,13 @@
   - Verified directly against the live backend: rename round-trip (create → rename → confirm in list) and row-delete round-trip (create row → delete → confirm gone), both via throwaway data cleaned up after. Confirmed via curl that the running frontend dev server is serving this code, not stale.
 - Not yet verified in the browser.
 
+## Current Step (continued) — the "6 PM" end-cap was dead space for dragging
+- The `schedule-grid__end-cap` added to mark the closing 6 PM boundary had no `onMouseDown`/`onMouseEnter` handlers — it was purely a label, not part of the draggable surface. User reported the last column couldn't be dragged into. Fixed by making each row's end-cap fire the same handlers as the actual last slot (index `slots.length - 1`) and mirror that slot's block color/selection state, so it now behaves as a visual continuation of the 5:30–6:00 column rather than dead space. The header's end-cap (just a label, never interactive) is unaffected.
+- Verified lint/build clean, confirmed live via the running dev server (no restart needed).
+- Not yet re-verified in the browser.
+
 ## Next Steps
-- First: get the user's browser re-verification (row delete, teacher/classroom rename, closing-time label, the scroll-removal fix, plus everything from the previous round — block edit/delete, visual design). Fix anything reported before moving on.
+- First: get the user's browser re-verification (end-cap dragging, row delete, teacher/classroom rename, closing-time label, the scroll-removal fix, plus everything from the previous round — block edit/delete, visual design). Fix anything reported before moving on.
 - Layer 13: client-side conflict pre-check before submit + a dedicated `ErrorToast` component, on top of the inline modal error already wired up in Layer 11/12.
 - Layer 14: Final verification against Phase 1 checklist.
 
