@@ -12,3 +12,7 @@ export async function createTeacher(name) {
   const { data } = await axios.post(`${API_BASE_URL}/api/teachers`, { name });
   return data;
 }
+
+export async function deleteTeacher(id) {
+  await axios.delete(`${API_BASE_URL}/api/teachers/${id}`);
+}

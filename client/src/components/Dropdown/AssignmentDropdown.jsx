@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Modal from '../common/Modal';
 import TeacherSelector from './TeacherSelector';
 import ClassroomSelector from './ClassroomSelector';
-import { addRow, saveBlock } from '../../api/scheduleApi';
+import { addRow, saveBlock, deleteBlock } from '../../api/scheduleApi';
 import { formatDisplayTime } from '../../utils/timeSlots';
 import { useTeachers } from '../../context/TeachersContext';
 import { useClassrooms } from '../../context/ClassroomsContext';
@@ -15,7 +15,9 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
   const { teachers } = useTeachers();
   const { classrooms } = useClassrooms();
 
-  const [step, setStep] = useState('choose');
+  const isEditing = Boolean(selection?.blockId);
+
+  const [step, setStep] = useState(isEditing && selection.status === 'green' ? 'teacherClassroom' : 'choose');
   const [selectedTeacherId, setSelectedTeacherId] = useState(selection?.teacherId || null);
   const [selectedClassroomId, setSelectedClassroomId] = useState(selection?.classroomId || null);
   const [error, setError] = useState(null);
@@ -36,6 +38,7 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
     setError(null);
     try {
       const updated = await saveBlock(date, selection.rowId, {
+        blockId: selection.blockId,
         startTime: selection.startTime,
         endTime: selection.endTime,
         status,
@@ -66,7 +69,17 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
         targetRowId = newRow.rowId;
       }
 
+      // Editing a block but moving it to a different teacher+classroom pairing:
+      // the blockId only exists on the original row, so delete it there first
+      // instead of passing blockId through (which would silently no-op into a
+      // duplicate create on the target row).
+      const isMovingToAnotherRow = isEditing && targetRowId !== selection.rowId;
+      if (isMovingToAnotherRow) {
+        await deleteBlock(date, selection.rowId, selection.blockId);
+      }
+
       const updated = await saveBlock(date, targetRowId, {
+        blockId: isMovingToAnotherRow ? undefined : selection.blockId,
         startTime: selection.startTime,
         endTime: selection.endTime,
         status: 'green',
@@ -82,7 +95,8 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
 
   return (
     <Modal isOpen={isOpen} ariaLabel="Assign this time block" className="modal--wide">
-      <h2>{selection.rowLabel}</h2>
+      <h2>{isEditing ? 'Edit assignment' : selection.rowLabel}</h2>
+      {isEditing && <p className="assignment-dropdown__row-label">{selection.rowLabel}</p>}
       <p className="assignment-dropdown__time">{timeRangeLabel}</p>
 
       {error && <p className="assignment-dropdown__error">{error}</p>}

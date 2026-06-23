@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import ScheduleRow from './ScheduleRow';
 import AssignmentDropdown from '../Dropdown/AssignmentDropdown';
+import BlockContextMenu from '../Block/BlockContextMenu';
 import { useDragSelect } from '../../hooks/useDragSelect';
-import { generateTimeSlots, formatDisplayTime } from '../../utils/timeSlots';
+import { generateTimeSlots, formatDisplayTime, findBlockForSlot } from '../../utils/timeSlots';
 import './ScheduleGrid.css';
 
 // Virtual row id for the trailing "add new row" affordance. The grid starts
@@ -12,10 +13,20 @@ import './ScheduleGrid.css';
 // PROGRESS.md for the reasoning).
 const NEW_ROW_ID = '__new__';
 
+// Short label shown above every half-hour column. AM/PM is only spelled out
+// at the very first slot and at the noon flip, otherwise it'd be repeated on
+// every single column.
+function formatSlotLabel(time, index) {
+  const full = formatDisplayTime(time);
+  if (index === 0 || time === '12:00') return full;
+  return full.replace(/ (AM|PM)$/, '');
+}
+
 function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
   const slots = generateTimeSlots();
   const rows = schedule.rows;
   const [pendingSelection, setPendingSelection] = useState(null);
+  const [pendingBlockMenu, setPendingBlockMenu] = useState(null);
 
   function handleSelectionComplete(rowId, startIndex, endIndex) {
     const startTime = slots[startIndex].start;
@@ -36,6 +47,22 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
     const row = rows.find((r) => r.rowId === rowId);
     if (!row) return;
 
+    // A single click (no drag) on a slot that's already part of a block opens
+    // the edit/delete context menu instead of starting a new assignment.
+    if (startIndex === endIndex) {
+      const existingBlock = findBlockForSlot(row.blocks, slots[startIndex]);
+      if (existingBlock) {
+        setPendingBlockMenu({
+          ...existingBlock,
+          rowId: row.rowId,
+          rowLabel: row.rowLabel,
+          teacherId: row.teacherId,
+          classroomId: row.classroomId,
+        });
+        return;
+      }
+    }
+
     setPendingSelection({
       rowId: row.rowId,
       rowLabel: row.rowLabel,
@@ -48,19 +75,33 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
 
   const { startDrag, extendDrag, isSlotSelected } = useDragSelect(handleSelectionComplete);
 
+  function handleEditBlock(block) {
+    setPendingBlockMenu(null);
+    setPendingSelection({
+      rowId: block.rowId,
+      rowLabel: block.rowLabel,
+      teacherId: block.teacherId,
+      classroomId: block.classroomId,
+      startTime: block.startTime,
+      endTime: block.endTime,
+      blockId: block.blockId,
+      status: block.status,
+    });
+  }
+
   return (
     <div className="schedule-grid">
       <div className="schedule-grid__header">
         <div className="schedule-row__label" />
         <div className="schedule-row__slots">
-          {slots.map((slot) => {
+          {slots.map((slot, index) => {
             const isHourMark = slot.start.endsWith(':00');
             return (
               <div
                 key={slot.start}
                 className={`schedule-grid__slot-label${isHourMark ? ' schedule-grid__slot-label--hour' : ''}`}
               >
-                {isHourMark ? formatDisplayTime(slot.start) : ''}
+                {formatSlotLabel(slot.start, index)}
               </div>
             );
           })}
@@ -94,13 +135,26 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
       />
 
       <AssignmentDropdown
-        key={pendingSelection ? `${pendingSelection.rowId}-${pendingSelection.startTime}-${pendingSelection.endTime}` : 'closed'}
+        key={
+          pendingSelection
+            ? `${pendingSelection.rowId}-${pendingSelection.blockId || ''}-${pendingSelection.startTime}-${pendingSelection.endTime}`
+            : 'closed'
+        }
         isOpen={Boolean(pendingSelection)}
         selection={pendingSelection}
         date={date}
         rows={rows}
         onScheduleUpdate={onScheduleUpdate}
         onClose={() => setPendingSelection(null)}
+      />
+
+      <BlockContextMenu
+        isOpen={Boolean(pendingBlockMenu)}
+        block={pendingBlockMenu}
+        date={date}
+        onEdit={handleEditBlock}
+        onScheduleUpdate={onScheduleUpdate}
+        onClose={() => setPendingBlockMenu(null)}
       />
     </div>
   );

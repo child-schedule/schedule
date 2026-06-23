@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { fetchClassrooms, createClassroom } from '../api/classroomsApi';
+import { fetchClassrooms, createClassroom, deleteClassroom } from '../api/classroomsApi';
 
 const ClassroomsContext = createContext(null);
 
@@ -21,8 +21,13 @@ export function ClassroomsProvider({ children }) {
     return created[0];
   }, []);
 
+  const removeClassroom = useCallback(async (id) => {
+    await deleteClassroom(id);
+    setClassrooms((prev) => prev.filter((c) => c._id !== id));
+  }, []);
+
   return (
-    <ClassroomsContext.Provider value={{ classrooms, isLoading, error, addClassroom }}>
+    <ClassroomsContext.Provider value={{ classrooms, isLoading, error, addClassroom, removeClassroom }}>
       {children}
     </ClassroomsContext.Provider>
   );

@@ -1,3 +1,8 @@
+.assignment-dropdown__row-label {
+  font-weight: 600;
+  margin: 0;
+}
+
 .assignment-dropdown__time {
   color: #5a5d66;
   margin-top: -0.25rem;
@@ -95,7 +100,14 @@
   gap: 0.25rem;
 }
 
+.entity-selector__row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
 .entity-selector__item {
+  flex: 1;
   width: 100%;
   text-align: left;
   padding: 0.45rem 0.6rem;
@@ -104,6 +116,24 @@
   background: #f7f7f8;
   cursor: pointer;
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.entity-selector__delete {
+  flex: 0 0 auto;
+  width: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: #f7f7f8;
+  color: #9a9da6;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.entity-selector__delete:hover {
+  background: #fdeceb;
+  color: #b3261e;
 }
 
 .entity-selector__item:hover {

@@ -27,3 +27,8 @@ export async function saveBlock(date, rowId, payload) {
   const { data } = await axios.put(`${API_BASE_URL}/api/schedule/${date}/row/${rowId}/block`, payload);
   return data;
 }
+
+export async function deleteBlock(date, rowId, blockId) {
+  const { data } = await axios.delete(`${API_BASE_URL}/api/schedule/${date}/row/${rowId}/block/${blockId}`);
+  return data;
+}

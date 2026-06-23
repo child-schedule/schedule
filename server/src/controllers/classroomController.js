@@ -32,4 +32,14 @@ async function createClassrooms(req, res, next) {
   }
 }
 
-module.exports = { getClassrooms, createClassrooms };
+async function deleteClassroom(req, res, next) {
+  try {
+    const classroom = await Classroom.findByIdAndDelete(req.params.id);
+    if (!classroom) return res.status(404).json({ error: 'Classroom not found' });
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { getClassrooms, createClassrooms, deleteClassroom };

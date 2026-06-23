@@ -31,3 +31,15 @@ export function formatDisplayTime(time) {
   const period = Number(hoursStr) >= 12 ? 'PM' : 'AM';
   return minutes === '00' ? `${hours} ${period}` : `${hours}:${minutes} ${period}`;
 }
+
+// Shared by the grid header (only the start/noon AM-PM marker) and rows.
+export function findBlockForSlot(blocks, slot) {
+  const slotStart = timeToMinutes(slot.start);
+  const slotEnd = timeToMinutes(slot.end);
+
+  return blocks.find((block) => {
+    const blockStart = timeToMinutes(block.startTime);
+    const blockEnd = timeToMinutes(block.endTime);
+    return blockStart < slotEnd && slotStart < blockEnd;
+  });
+}

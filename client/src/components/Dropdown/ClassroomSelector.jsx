@@ -3,7 +3,7 @@ import AddEntityForm from './AddEntityForm';
 import { useClassrooms } from '../../context/ClassroomsContext';
 
 function ClassroomSelector({ selectedId, onSelect }) {
-  const { classrooms, addClassroom } = useClassrooms();
+  const { classrooms, addClassroom, removeClassroom } = useClassrooms();
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (
@@ -11,7 +11,7 @@ function ClassroomSelector({ selectedId, onSelect }) {
       <h3 className="entity-selector__title">Classroom</h3>
       <ul className="entity-selector__list">
         {classrooms.map((classroom) => (
-          <li key={classroom._id}>
+          <li key={classroom._id} className="entity-selector__row">
             <button
               type="button"
               className={`entity-selector__item${
@@ -20,6 +20,14 @@ function ClassroomSelector({ selectedId, onSelect }) {
               onClick={() => onSelect(classroom._id)}
             >
               {classroom.name}
+            </button>
+            <button
+              type="button"
+              className="entity-selector__delete"
+              aria-label={`Delete ${classroom.name}`}
+              onClick={() => removeClassroom(classroom._id)}
+            >
+              ×
             </button>
           </li>
         ))}

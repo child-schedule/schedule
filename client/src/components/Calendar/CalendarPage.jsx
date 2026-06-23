@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import CalendarGrid from './CalendarGrid';
+import AppHeader from '../common/AppHeader';
 import { fetchSchedule } from '../../api/scheduleApi';
 import { formatDateKey, getDaysInMonth, getMonthLabel } from '../../utils/dateHelpers';
 import './Calendar.css';
@@ -55,23 +56,27 @@ function CalendarPage() {
   }
 
   return (
-    <main>
-      <h1>Childcare Scheduler</h1>
-      <div className="calendar-header">
-        <button type="button" onClick={goToPreviousMonth} aria-label="Previous month">
-          ‹
-        </button>
-        <h2>{getMonthLabel(year, month)}</h2>
-        <button type="button" onClick={goToNextMonth} aria-label="Next month">
-          ›
-        </button>
-      </div>
-      {isLoading ? (
-        <p aria-busy="true">Loading schedule…</p>
-      ) : (
-        <CalendarGrid year={year} month={month} scheduledDates={scheduledDates} />
-      )}
-    </main>
+    <>
+      <AppHeader />
+      <main>
+        <div className="surface-card calendar-card">
+          <div className="calendar-header">
+            <button type="button" onClick={goToPreviousMonth} aria-label="Previous month">
+              ‹
+            </button>
+            <h2>{getMonthLabel(year, month)}</h2>
+            <button type="button" onClick={goToNextMonth} aria-label="Next month">
+              ›
+            </button>
+          </div>
+          {isLoading ? (
+            <p aria-busy="true">Loading schedule…</p>
+          ) : (
+            <CalendarGrid year={year} month={month} scheduledDates={scheduledDates} />
+          )}
+        </div>
+      </main>
+    </>
   );
 }
 

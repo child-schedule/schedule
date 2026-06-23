@@ -32,4 +32,14 @@ async function createTeachers(req, res, next) {
   }
 }
 
-module.exports = { getTeachers, createTeachers };
+async function deleteTeacher(req, res, next) {
+  try {
+    const teacher = await Teacher.findByIdAndDelete(req.params.id);
+    if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { getTeachers, createTeachers, deleteTeacher };
