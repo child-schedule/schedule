@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import Modal from '../common/Modal';
+import ErrorToast from '../common/ErrorToast';
 import TeacherSelector from './TeacherSelector';
 import ClassroomSelector from './ClassroomSelector';
 import { addRow, saveBlock, deleteBlock } from '../../api/scheduleApi';
 import { formatDisplayTime } from '../../utils/timeSlots';
+import { useConflictCheck } from '../../hooks/useConflictCheck';
 import { useTeachers } from '../../context/TeachersContext';
 import { useClassrooms } from '../../context/ClassroomsContext';
 import './Dropdown.css';
@@ -14,6 +16,7 @@ import './Dropdown.css';
 function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, onClose }) {
   const { teachers } = useTeachers();
   const { classrooms } = useClassrooms();
+  const checkConflict = useConflictCheck();
 
   const isEditing = Boolean(selection?.blockId);
 
@@ -34,6 +37,18 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
   }
 
   async function submitDirectBlock(status) {
+    const conflict = checkConflict(rows, {
+      teacherId: selection.teacherId,
+      startTime: selection.startTime,
+      endTime: selection.endTime,
+      status,
+      excludeBlockId: selection.blockId,
+    });
+    if (conflict) {
+      setError(conflict);
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     try {
@@ -53,6 +68,18 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
   }
 
   async function handleConfirmTeacherClassroom() {
+    const conflict = checkConflict(rows, {
+      teacherId: selectedTeacherId,
+      startTime: selection.startTime,
+      endTime: selection.endTime,
+      status: 'green',
+      excludeBlockId: selection.blockId,
+    });
+    if (conflict) {
+      setError(conflict);
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     try {
@@ -98,8 +125,6 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
       <h2>{isEditing ? 'Edit assignment' : selection.rowLabel}</h2>
       {isEditing && <p className="assignment-dropdown__row-label">{selection.rowLabel}</p>}
       <p className="assignment-dropdown__time">{timeRangeLabel}</p>
-
-      {error && <p className="assignment-dropdown__error">{error}</p>}
 
       {step === 'choose' && (
         <div className="assignment-dropdown__options">
@@ -160,6 +185,8 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
           </button>
         )}
       </div>
+
+      <ErrorToast message={error} onDismiss={() => setError(null)} />
     </Modal>
   );
 }

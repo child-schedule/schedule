@@ -71,10 +71,15 @@
 - Verified lint/build clean, confirmed live via the running dev server (no restart needed).
 - Not yet re-verified in the browser.
 
+- Layer 13 complete: client-side conflict pre-check + `ErrorToast`.
+  - `useConflictCheck` (new, `hooks/`, per the project plan's folder spec): mirrors the backend's `checkBlockConflict` middleware exactly — same teacher, overlapping time, green/yellow only (orange exempt), excludes the block being edited. Runs in `AssignmentDropdown` before every `saveBlock` call (both the direct Break/Meet Front Office path and the Teacher+Classroom confirm path), so an obvious conflict is caught and shown immediately without a round trip to the API.
+  - `ErrorToast` (new, `components/common/`, per the same folder spec): a floating, auto-dismissing (5s) notification with a manual close button. Replaces the inline error paragraph in `AssignmentDropdown` for both the local pre-check and any backend error (409 or otherwise) — both paths now flow through the same `error` state and render via the toast. `BlockContextMenu`'s unrelated delete-failure message still uses the small inline paragraph (not a conflict scenario, no need for a toast).
+  - Verified lint/build clean. Replicated the conflict logic directly (overlapping green, non-overlapping, orange-exempt, edit-excludes-self, different-teacher-no-conflict — all five cases matched intended behavior) and confirmed via curl that the dev server is serving the new code.
+- Not yet verified in the browser (see the standing Chromium/sudo limitation in Blockers).
+
 ## Next Steps
-- First: get the user's browser re-verification (end-cap dragging, row delete, teacher/classroom rename, closing-time label, the scroll-removal fix, plus everything from the previous round — block edit/delete, visual design). Fix anything reported before moving on.
-- Layer 13: client-side conflict pre-check before submit + a dedicated `ErrorToast` component, on top of the inline modal error already wired up in Layer 11/12.
-- Layer 14: Final verification against Phase 1 checklist.
+- First: get the user's browser re-verification of everything accumulated this session — end-cap dragging, row delete, teacher/classroom rename, closing-time label, the scroll-removal fix, the client-side conflict toast, plus the earlier round (block edit/delete, visual design). Fix anything reported before moving on.
+- Layer 14: Final verification against the Phase 1 checklist in `childcare-scheduling-project-plan.md`.
 
 ## Blockers
 - MongoDB was not installed in WSL initially (Ubuntu 26.04 "resolute" too new for official MongoDB apt repo). Resolved: installed using the 24.04 "noble" package repo as a workaround. mongod also failed to fork initially because /var/log wasn't writable by the user — resolved by using a logpath under the user's home directory (~/mongodb-logs/mongod.log). MongoDB 8.0.26 confirmed running via `mongosh --eval "db.version()"`.
