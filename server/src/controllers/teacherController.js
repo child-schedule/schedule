@@ -32,6 +32,19 @@ async function createTeachers(req, res, next) {
   }
 }
 
+async function updateTeacher(req, res, next) {
+  try {
+    const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    if (!name) return res.status(400).json({ error: 'A teacher name is required' });
+
+    const teacher = await Teacher.findByIdAndUpdate(req.params.id, { name }, { new: true });
+    if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
+    res.json(teacher);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function deleteTeacher(req, res, next) {
   try {
     const teacher = await Teacher.findByIdAndDelete(req.params.id);
@@ -42,4 +55,4 @@ async function deleteTeacher(req, res, next) {
   }
 }
 
-module.exports = { getTeachers, createTeachers, deleteTeacher };
+module.exports = { getTeachers, createTeachers, updateTeacher, deleteTeacher };

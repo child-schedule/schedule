@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { fetchTeachers, createTeacher, deleteTeacher } from '../api/teachersApi';
+import { fetchTeachers, createTeacher, updateTeacher, deleteTeacher } from '../api/teachersApi';
 
 const TeachersContext = createContext(null);
 
@@ -26,8 +26,16 @@ export function TeachersProvider({ children }) {
     setTeachers((prev) => prev.filter((t) => t._id !== id));
   }, []);
 
+  const renameTeacher = useCallback(async (id, name) => {
+    const updated = await updateTeacher(id, name);
+    setTeachers((prev) => prev.map((t) => (t._id === id ? updated : t)));
+    return updated;
+  }, []);
+
   return (
-    <TeachersContext.Provider value={{ teachers, isLoading, error, addTeacher, removeTeacher }}>
+    <TeachersContext.Provider
+      value={{ teachers, isLoading, error, addTeacher, removeTeacher, renameTeacher }}
+    >
       {children}
     </TeachersContext.Provider>
   );

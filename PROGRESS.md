@@ -58,8 +58,16 @@
 ## Current Step (continued) — closing time (6 PM) wasn't shown
 - Each header label marks a slot's *start* time, so the last column (5:30–6:00) was only ever labeled "5:30" — 6:00 PM never appeared anywhere since no slot starts there (slots run 7:00 through 17:30). Added a small fixed-width `schedule-grid__end-cap` cell after the last column in both the header (showing the closing boundary, `formatDisplayTime(slots.at(-1).end)` → "6 PM") and every row (an unlabeled filler so columns still line up between the header and the rows). Confirmed live via HMR.
 
+## Current Step (continued) — row delete and teacher/classroom rename
+- User reported two real gaps: no way to delete an entire row (only individual blocks via `BlockContextMenu`), and no way to rename a teacher/classroom (delete-only).
+  - **Row delete**: `ScheduleRow` now shows a small × next to the row label (real rows only, not the placeholder) — appears on hover, calls `DELETE /api/schedule/:date/row/:rowId` (the endpoint already existed from Layer 4 but was never wired into the UI) and syncs local state. No confirmation step, consistent with the existing teacher/classroom delete pattern.
+  - **Teacher/classroom rename**: added `PATCH /api/teachers/:id` and `PATCH /api/classrooms/:id` (previously only GET/POST/DELETE existed). `TeacherSelector`/`ClassroomSelector` got a pencil (✎) next to each entry that swaps that row into an inline input with Save/Cancel (Enter/Escape also work).
+  - **Known limitation, not fixed**: schedule rows store a denormalized `rowLabel` snapshot (e.g. "Infant - Jennifer") rather than computing it live from the teacher/classroom name. Renaming a teacher does *not* retroactively update the label on rows already created before the rename — only new rows created after the rename get the new name. Flagging this now since it's a real gap, but fixing it would mean cascading the rename across every row referencing that teacher/classroom on every date, which is out of scope unless the user asks for it.
+  - Verified directly against the live backend: rename round-trip (create → rename → confirm in list) and row-delete round-trip (create row → delete → confirm gone), both via throwaway data cleaned up after. Confirmed via curl that the running frontend dev server is serving this code, not stale.
+- Not yet verified in the browser.
+
 ## Next Steps
-- First: get the user's browser re-verification (closing-time label, the scroll-removal fix, plus everything from the previous round — block edit/delete, teacher/classroom delete, visual design). Fix anything reported before moving on.
+- First: get the user's browser re-verification (row delete, teacher/classroom rename, closing-time label, the scroll-removal fix, plus everything from the previous round — block edit/delete, visual design). Fix anything reported before moving on.
 - Layer 13: client-side conflict pre-check before submit + a dedicated `ErrorToast` component, on top of the inline modal error already wired up in Layer 11/12.
 - Layer 14: Final verification against Phase 1 checklist.
 

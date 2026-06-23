@@ -32,3 +32,8 @@ export async function deleteBlock(date, rowId, blockId) {
   const { data } = await axios.delete(`${API_BASE_URL}/api/schedule/${date}/row/${rowId}/block/${blockId}`);
   return data;
 }
+
+export async function deleteRow(date, rowId) {
+  const { data } = await axios.delete(`${API_BASE_URL}/api/schedule/${date}/row/${rowId}`);
+  return data;
+}

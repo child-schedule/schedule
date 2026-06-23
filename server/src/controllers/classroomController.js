@@ -32,6 +32,19 @@ async function createClassrooms(req, res, next) {
   }
 }
 
+async function updateClassroom(req, res, next) {
+  try {
+    const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    if (!name) return res.status(400).json({ error: 'A classroom name is required' });
+
+    const classroom = await Classroom.findByIdAndUpdate(req.params.id, { name }, { new: true });
+    if (!classroom) return res.status(404).json({ error: 'Classroom not found' });
+    res.json(classroom);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function deleteClassroom(req, res, next) {
   try {
     const classroom = await Classroom.findByIdAndDelete(req.params.id);
@@ -42,4 +55,4 @@ async function deleteClassroom(req, res, next) {
   }
 }
 
-module.exports = { getClassrooms, createClassrooms, deleteClassroom };
+module.exports = { getClassrooms, createClassrooms, updateClassroom, deleteClassroom };

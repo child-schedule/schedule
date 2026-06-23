@@ -4,6 +4,7 @@ import AssignmentDropdown from '../Dropdown/AssignmentDropdown';
 import BlockContextMenu from '../Block/BlockContextMenu';
 import { useDragSelect } from '../../hooks/useDragSelect';
 import { generateTimeSlots, formatDisplayTime, findBlockForSlot } from '../../utils/timeSlots';
+import { deleteRow } from '../../api/scheduleApi';
 import './ScheduleGrid.css';
 
 // Virtual row id for the trailing "add new row" affordance. The grid starts
@@ -75,6 +76,11 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
 
   const { startDrag, extendDrag, isSlotSelected } = useDragSelect(handleSelectionComplete);
 
+  async function handleDeleteRow(rowId) {
+    const updated = await deleteRow(date, rowId);
+    onScheduleUpdate(updated);
+  }
+
   function handleEditBlock(block) {
     setPendingBlockMenu(null);
     setPendingSelection({
@@ -124,6 +130,7 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
           onSlotMouseDown={(index) => startDrag(row.rowId, index)}
           onSlotMouseEnter={(index) => extendDrag(row.rowId, index)}
           isSlotSelected={(index) => isSlotSelected(row.rowId, index)}
+          onDeleteRow={() => handleDeleteRow(row.rowId)}
         />
       ))}
 

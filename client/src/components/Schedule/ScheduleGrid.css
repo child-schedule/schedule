@@ -27,17 +27,48 @@
 
 .schedule-row__label {
   flex: 0 0 180px;
-  padding: 0.75rem 0.85rem;
+  padding: 0.75rem 0.6rem 0.75rem 0.85rem;
   font-size: 0.9rem;
   font-weight: 600;
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid var(--color-border);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
   background: var(--color-surface);
   position: sticky;
   left: 0;
   z-index: 1;
+}
+
+.schedule-row__label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-row__delete {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #9a9da6;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.schedule-row__label:hover .schedule-row__delete {
+  opacity: 1;
+}
+
+.schedule-row__delete:hover {
+  background: #fdeceb;
+  color: #b3261e;
 }
 
 .schedule-row__slots {

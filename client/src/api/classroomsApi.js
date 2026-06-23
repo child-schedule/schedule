@@ -16,3 +16,8 @@ export async function createClassroom(name) {
 export async function deleteClassroom(id) {
   await axios.delete(`${API_BASE_URL}/api/classrooms/${id}`);
 }
+
+export async function updateClassroom(id, name) {
+  const { data } = await axios.patch(`${API_BASE_URL}/api/classrooms/${id}`, { name });
+  return data;
+}

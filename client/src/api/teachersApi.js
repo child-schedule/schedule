@@ -16,3 +16,8 @@ export async function createTeacher(name) {
 export async function deleteTeacher(id) {
   await axios.delete(`${API_BASE_URL}/api/teachers/${id}`);
 }
+
+export async function updateTeacher(id, name) {
+  const { data } = await axios.patch(`${API_BASE_URL}/api/teachers/${id}`, { name });
+  return data;
+}
