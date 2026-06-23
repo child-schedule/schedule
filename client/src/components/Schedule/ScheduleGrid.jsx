@@ -25,7 +25,9 @@ function formatSlotLabel(time, index) {
 
 function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
   const slots = generateTimeSlots();
-  const rows = schedule.rows;
+  // The grid always edits the working draft, never the published schedule
+  // directly — nothing here is visible elsewhere until Apply is clicked.
+  const rows = schedule.draftRows;
   const [pendingSelection, setPendingSelection] = useState(null);
   const [pendingBlockMenu, setPendingBlockMenu] = useState(null);
 

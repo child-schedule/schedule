@@ -37,3 +37,9 @@ export async function deleteRow(date, rowId) {
   const { data } = await axios.delete(`${API_BASE_URL}/api/schedule/${date}/row/${rowId}`);
   return data;
 }
+
+// Publishes the working draft (draftRows) as the saved schedule (rows).
+export async function applySchedule(date) {
+  const { data } = await axios.post(`${API_BASE_URL}/api/schedule/${date}/apply`);
+  return data;
+}

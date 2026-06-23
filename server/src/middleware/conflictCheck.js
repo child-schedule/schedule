@@ -21,11 +21,11 @@ async function checkBlockConflict(req, res, next) {
     const schedule = await Schedule.findOne({ date });
     if (!schedule) return res.status(404).json({ error: 'Schedule not found for this date' });
 
-    const currentRow = schedule.rows.find((r) => r.rowId === rowId);
+    const currentRow = schedule.draftRows.find((r) => r.rowId === rowId);
     if (!currentRow) return res.status(404).json({ error: 'Row not found' });
 
     if (status !== 'orange') {
-      for (const row of schedule.rows) {
+      for (const row of schedule.draftRows) {
         if (row.teacherId.toString() !== currentRow.teacherId.toString()) continue;
 
         for (const block of row.blocks) {

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { copySchedule, fetchSchedule } from '../api/scheduleApi';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { applySchedule, copySchedule, fetchSchedule } from '../api/scheduleApi';
 import { getPreviousDateKey } from '../utils/dateHelpers';
 
 // Loads the schedule for `dateKey`. If none exists yet, checks the previous
@@ -28,9 +28,11 @@ export function useSchedule(dateKey) {
       const previous = await fetchSchedule(prevKey);
       if (isCancelled) return;
 
-      setSchedule({ date: dateKey, rows: [] });
+      setSchedule({ date: dateKey, rows: [], draftRows: [] });
       setPreviousDateKey(prevKey);
-      setShowCopyModal(Boolean(previous));
+      // Only offer to copy from a day that actually has a *published*
+      // schedule — an abandoned, never-applied draft isn't meaningful to copy.
+      setShowCopyModal(Boolean(previous) && previous.rows.length > 0);
       setIsLoading(false);
     })();
 
@@ -50,10 +52,26 @@ export function useSchedule(dateKey) {
   }, []);
 
   // Lets callers (e.g. the assignment dropdown) sync local state after a
-  // row/block mutation without refetching from the server.
+  // row/block mutation without refetching from the server. Every mutation
+  // affects draftRows on the server, never the published rows directly.
   const applyScheduleUpdate = useCallback((updated) => {
     setSchedule(updated);
   }, []);
+
+  // True once anything has ever been published for this date — distinguishes
+  // a first-time save (nothing to overwrite) from a re-save (needs confirmation).
+  const isPublished = Boolean(schedule && schedule.rows.length > 0);
+
+  // True when the working draft differs from what's currently published.
+  const isDirty = useMemo(() => {
+    if (!schedule) return false;
+    return JSON.stringify(schedule.draftRows) !== JSON.stringify(schedule.rows);
+  }, [schedule]);
+
+  const applyAndSave = useCallback(async () => {
+    const updated = await applySchedule(dateKey);
+    setSchedule(updated);
+  }, [dateKey]);
 
   return {
     schedule,
@@ -63,5 +81,8 @@ export function useSchedule(dateKey) {
     copyFromPrevious,
     startFresh,
     applyScheduleUpdate,
+    isPublished,
+    isDirty,
+    applyAndSave,
   };
 }

@@ -8,6 +8,7 @@ const {
   addOrUpdateBlock,
   deleteBlock,
   deleteRow,
+  applyDraft,
 } = require('../controllers/scheduleController');
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get('/:date', getSchedule);
 router.post('/:date', createSchedule);
 router.post('/:date/copy', copySchedule);
+router.post('/:date/apply', applyDraft);
 router.post('/:date/row', addRow);
 router.put('/:date/row/:rowId/block', checkBlockConflict, addOrUpdateBlock);
 router.delete('/:date/row/:rowId/block/:blockId', deleteBlock);

@@ -27,7 +27,11 @@ function CalendarPage() {
       dateKeys.map((dateKey) => fetchSchedule(dateKey).then((schedule) => ({ dateKey, schedule })))
     ).then((results) => {
       if (isCancelled) return;
-      const withSchedule = results.filter((r) => r.schedule).map((r) => r.dateKey);
+      // Only dates with a *published* schedule get the dot — an in-progress,
+      // never-applied draft isn't a "saved schedule" yet.
+      const withSchedule = results
+        .filter((r) => r.schedule && r.schedule.rows.length > 0)
+        .map((r) => r.dateKey);
       setScheduledDates(new Set(withSchedule));
       setLoadedKey(currentKey);
     });

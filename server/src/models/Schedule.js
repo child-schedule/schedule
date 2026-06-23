@@ -18,7 +18,14 @@ const rowSchema = new mongoose.Schema({
 
 const scheduleSchema = new mongoose.Schema({
   date: { type: String, required: true, unique: true },
+  // `rows` is the published/live schedule (what the rest of the app — and,
+  // eventually, the dashboard — would read). `draftRows` is the working copy
+  // every edit applies to; nothing reaches `rows` until an explicit "apply"
+  // (see /apply route + applyDraft controller), which copies draftRows over
+  // rows. Schedules created before this existed only have `rows` — getSchedule
+  // backfills draftRows = rows the first time such a document is read.
   rows: { type: [rowSchema], default: [] },
+  draftRows: { type: [rowSchema], default: [] },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Schedule', scheduleSchema);

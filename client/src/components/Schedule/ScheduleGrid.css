@@ -2,6 +2,54 @@
   margin-top: 0.5rem;
 }
 
+.schedule-page__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.schedule-page__heading h1 {
+  margin: 0;
+}
+
+.schedule-page__save {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.schedule-page__status {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.schedule-page__status--dirty {
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.schedule-page__save button.primary {
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.schedule-page__save button.primary:hover:not(:disabled) {
+  background: var(--color-accent-dark);
+}
+
+.schedule-page__save button.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .schedule-grid {
   width: 100%;
   border: 1px solid var(--color-border);
@@ -151,7 +199,7 @@
 }
 
 .time-block--orange {
-  background: #ed8f3c;
+  background: #d64545;
 }
 
 .time-block--white {
