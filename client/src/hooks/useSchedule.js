@@ -2,6 +2,28 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { applySchedule, copySchedule, fetchSchedule } from '../api/scheduleApi';
 import { getPreviousDateKey } from '../utils/dateHelpers';
 
+// The server serializes `rows` (manually rebuilt by /apply, key order
+// rowId-first) and `draftRows` (a Mongoose subdocument, schema key order)
+// differently even when the content is identical — so comparing them with
+// plain JSON.stringify is unreliable. This rebuilds both sides with a fixed
+// key order before comparing.
+function canonicalizeRows(rows) {
+  return JSON.stringify(
+    rows.map((row) => ({
+      rowId: row.rowId,
+      teacherId: row.teacherId,
+      classroomId: row.classroomId,
+      rowLabel: row.rowLabel,
+      blocks: row.blocks.map((block) => ({
+        blockId: block.blockId,
+        startTime: block.startTime,
+        endTime: block.endTime,
+        status: block.status,
+      })),
+    }))
+  );
+}
+
 // Loads the schedule for `dateKey`. If none exists yet, checks the previous
 // day and offers to copy it (per the project plan's copy-previous-day flow).
 export function useSchedule(dateKey) {
@@ -65,7 +87,7 @@ export function useSchedule(dateKey) {
   // True when the working draft differs from what's currently published.
   const isDirty = useMemo(() => {
     if (!schedule) return false;
-    return JSON.stringify(schedule.draftRows) !== JSON.stringify(schedule.rows);
+    return canonicalizeRows(schedule.draftRows) !== canonicalizeRows(schedule.rows);
   }, [schedule]);
 
   const applyAndSave = useCallback(async () => {

@@ -90,7 +90,7 @@ function AssignmentDropdown({ isOpen, selection, date, rows, onScheduleUpdate, o
       let targetRowId = existingRow?.rowId;
       if (!targetRowId) {
         const updatedAfterRow = await addRow(date, selectedTeacherId, selectedClassroomId);
-        const newRow = updatedAfterRow.rows.find(
+        const newRow = updatedAfterRow.draftRows.find(
           (r) => r.teacherId === selectedTeacherId && r.classroomId === selectedClassroomId
         );
         targetRowId = newRow.rowId;
