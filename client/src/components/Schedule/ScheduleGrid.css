@@ -30,22 +30,36 @@
   font-weight: 600;
 }
 
-.schedule-page__save button.primary {
+.schedule-page__save button {
   padding: 0.55rem 1.1rem;
   border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.schedule-page__save button.primary {
   border: 1px solid var(--color-accent);
   background: var(--color-accent);
   color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.12s ease;
 }
 
 .schedule-page__save button.primary:hover:not(:disabled) {
   background: var(--color-accent-dark);
 }
 
-.schedule-page__save button.primary:disabled {
+.schedule-page__save button.secondary {
+  border: 1px solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+
+.schedule-page__save button.secondary:hover:not(:disabled) {
+  background: var(--color-accent-soft);
+}
+
+.schedule-page__save button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -93,6 +107,7 @@
 .schedule-row__label-text {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .schedule-row__delete {
@@ -217,7 +232,6 @@
 }
 
 .schedule-row--placeholder .schedule-row__label {
-  font-style: italic;
   color: #5a8a6c;
 }
 

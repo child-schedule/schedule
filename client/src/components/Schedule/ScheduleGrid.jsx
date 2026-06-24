@@ -137,7 +137,7 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
       ))}
 
       <ScheduleRow
-        rowLabel="+ Add new row"
+        rowLabel="+ Add"
         blocks={[]}
         slots={slots}
         isPlaceholder

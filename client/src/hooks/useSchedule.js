@@ -30,7 +30,10 @@ export function useSchedule(dateKey) {
   const [schedule, setSchedule] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showCopyModal, setShowCopyModal] = useState(false);
-  const [previousDateKey, setPreviousDateKey] = useState(null);
+
+  // Pure function of dateKey — available unconditionally (not just on a
+  // fresh date) so the always-on "Copy Previous Day" button works any time.
+  const previousDateKey = useMemo(() => getPreviousDateKey(dateKey), [dateKey]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -46,12 +49,10 @@ export function useSchedule(dateKey) {
         return;
       }
 
-      const prevKey = getPreviousDateKey(dateKey);
-      const previous = await fetchSchedule(prevKey);
+      const previous = await fetchSchedule(previousDateKey);
       if (isCancelled) return;
 
       setSchedule({ date: dateKey, rows: [], draftRows: [] });
-      setPreviousDateKey(prevKey);
       // Only offer to copy from a day that actually has a *published*
       // schedule — an abandoned, never-applied draft isn't meaningful to copy.
       setShowCopyModal(Boolean(previous) && previous.rows.length > 0);
@@ -61,7 +62,7 @@ export function useSchedule(dateKey) {
     return () => {
       isCancelled = true;
     };
-  }, [dateKey]);
+  }, [dateKey, previousDateKey]);
 
   const copyFromPrevious = useCallback(async () => {
     const copied = await copySchedule(dateKey);

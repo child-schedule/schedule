@@ -2,9 +2,15 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSchedule } from '../../hooks/useSchedule';
 import AppHeader from '../common/AppHeader';
+import ErrorToast from '../common/ErrorToast';
 import CopyDayModal from './CopyDayModal';
+import CopyPreviousModal from './CopyPreviousModal';
 import SaveConfirmModal from './SaveConfirmModal';
 import ScheduleGrid from './ScheduleGrid';
+
+function describeError(err) {
+  return err.response?.data?.error || 'Could not copy the previous day. Try again.';
+}
 
 function formatLongDate(dateKey) {
   const [year, month, day] = dateKey.split('-').map(Number);
@@ -32,6 +38,22 @@ function SchedulePage() {
   } = useSchedule(date);
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showCopyPreviousConfirm, setShowCopyPreviousConfirm] = useState(false);
+  const [isCopyingPrevious, setIsCopyingPrevious] = useState(false);
+  const [copyPreviousError, setCopyPreviousError] = useState(null);
+
+  async function handleConfirmCopyPrevious() {
+    setIsCopyingPrevious(true);
+    setCopyPreviousError(null);
+    try {
+      await copyFromPrevious();
+      setShowCopyPreviousConfirm(false);
+    } catch (err) {
+      setCopyPreviousError(describeError(err));
+    } finally {
+      setIsCopyingPrevious(false);
+    }
+  }
 
   async function handleSaveClick() {
     if (isPublished) {
@@ -72,6 +94,14 @@ function SchedulePage() {
               </span>
               <button
                 type="button"
+                className="secondary"
+                disabled={isCopyingPrevious}
+                onClick={() => setShowCopyPreviousConfirm(true)}
+              >
+                Copy Previous Day
+              </button>
+              <button
+                type="button"
                 className="primary"
                 disabled={!isDirty || isSaving}
                 onClick={handleSaveClick}
@@ -99,6 +129,13 @@ function SchedulePage() {
           onConfirm={handleConfirmSave}
           onCancel={() => setShowSaveConfirm(false)}
         />
+        <CopyPreviousModal
+          isOpen={showCopyPreviousConfirm}
+          previousDateKey={previousDateKey}
+          onConfirm={handleConfirmCopyPrevious}
+          onCancel={() => setShowCopyPreviousConfirm(false)}
+        />
+        <ErrorToast message={copyPreviousError} onDismiss={() => setCopyPreviousError(null)} />
       </main>
     </>
   );
