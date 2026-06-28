@@ -3,6 +3,7 @@ const cors = require('cors');
 const teacherRoutes = require('./routes/teacherRoutes');
 const classroomRoutes = require('./routes/classroomRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const teacherViewRoutes = require('./routes/teacherViewRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/schedule', scheduleRoutes);
+app.use('/api', teacherViewRoutes);
 
 app.use(errorHandler);
 

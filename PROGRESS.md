@@ -61,18 +61,53 @@ Used this to click through the app for the first time: calendar, the real `2026-
 
 Both verified in the real browser: create row+block → Unsaved changes → first save → All changes saved → delete the block → Unsaved changes again → Save → **re-save confirmation modal correctly appears** → confirm → All changes saved. Zero console errors throughout (aside from expected 404s from the existence-check pattern). Visually confirmed via screenshots: calendar today-highlight + dot, the real `2026-06-23` data rendering correctly (green shift + **red** Meet Front Office, confirming the color fix), 12-hour labels, the "6 PM" end-cap, disabled Save button when not dirty, both selector panels with working inline add/auto-select, the exact spec wording for the confirmation summary, and the block context menu.
 
+## Post-Phase-2 — Teachers View fixes (session 2026-06-28)
+
+Three user-reported issues fixed and browser-verified (Playwright, 0.00px alignment diff):
+
+### Fix 1 — Orange blocks filtered in Teachers View
+`client/src/utils/teacherScheduleStates.js`: orange (Meet Front Office) blocks are filtered out before state logic runs — Teachers View only, not system-wide. Reduced from 6 states to 5: Not in center (1), In classroom (2), Break (3), In center (5), Left center (6). Orange time slots resolve naturally via gap/boundary logic: if a later green/yellow block exists the slot shows as In center; otherwise Left center.
+
+### Fix 2 — Merged cells with internal slot dividers
+`TeacherScheduleRow.jsx`: consecutive same-state slots are now grouped into one merged visual block with no internal dividers. Each block spans proportional width via `gridColumn: span N`. A CSS `repeating-linear-gradient` (using `--slot-count` CSS custom property) draws subtle white dividers inside each merged block at every 30-min slot boundary — so column lines from the header extend visually into the coloured row.
+
+### Fix 3 — Results on a new page; no-schedule stays on selection page
+- New file: `client/src/components/TeachersView/TeacherResultPage.jsx` — route `/teachers-view/:teacherId/:date`. Fetches the API independently on mount (bookmarkable URL). Layout: soft gradient page background, grid in a `surface-card`. Back link → `/teachers-view`.
+- `TeachersViewPage.jsx` updated: on Show Schedule click, if `blocks.length > 0` → `navigate(...)` to result page. If `blocks.length === 0` → show "No schedule found for [Name] on [Date]" inline, stay on selection page.
+- `App.jsx`: added `/teachers-view/:teacherId/:date` route.
+
+### Fix 4 — Grid alignment (CSS Grid refactor)
+Root cause of the 11:00–11:30 misalignment: header slots and data cells were in **separate** flex containers whose widths diverged by ~8px (each header cell has a right border; the merged data cell has only one, so 8 fewer pixels of border width = 8px drift). Fix: moved both header and data cells into a **single CSS Grid** (`grid-template-columns: 180px repeat(22, 1fr) 36px`). All cells are now direct children of one grid; column widths are shared by definition.
+
+Browser-verified alignment: right-edge diff for all 4 data cells = **0.00px** vs corresponding header column boundaries.
+
 ## Current Step
 
-Everything above is built, committed, and verified (backend live-script E2E, an independent reviewer agent, and now real browser testing). The app is in a working, Phase-1-complete-plus-enhancements state. Both servers (and mongod) are expected to still be running — see "Restarting the stack" below if not.
+**Phase 2 complete (all steps 1–9 + post-Phase-2 fixes). Waiting for Classroom View spec from user.**
 
-**Known, accepted gaps (not fixed, intentionally deferred):**
-- Renaming a teacher/classroom doesn't retroactively relabel rows created before the rename (denormalized `rowLabel` snapshot) — would require cascading the rename across every row on every date; out of scope unless asked.
-- The calendar page generates ~30 console 404s per month view (one per day's existence probe, all caught and handled) — a real console-cleanliness gap, not fixed, accepted cost of the no-list-by-month-endpoint design from Layer 7.
+### Phase 2 completed steps
+1. ✅ `server/src/routes/teacherViewRoutes.js` — `GET /api/schedule/:date/teacher/:teacherId`, mounted in `app.js`
+2. ✅ `App.jsx` routes — `/` → LandingPage, `/dashboard` → CalendarPage, `/teachers-view`, `/teachers-view/:teacherId/:date`, `/classroom-view`
+3. ✅ `LandingPage.jsx` + `LandingPage.css` — 3-box landing with hover effects, uses `<Link>` (accessible)
+4. ✅ `teacherScheduleStates.js` — `buildSlots(blocks)`, 5 states (orange filtered), boundary rules verified
+5. ✅ `TeacherSearchInput.jsx` — typeahead, real-time filter, keyboard nav (↑↓ Enter Escape)
+6. ✅ `DatePickerInput.jsx` — text input + mini calendar overlay, both sync to same state
+7. ✅ `TeachersViewPage.jsx` — form card, disabled button, navigate on success, no-schedule inline
+8. ✅ `TeacherScheduleGrid.jsx` + `TeacherScheduleRow.jsx` — CSS Grid, merged cells, gradient dividers, pixel-perfect alignment
+9. ✅ `TeacherResultPage.jsx` — result page at `/teachers-view/:teacherId/:date`, gradient bg, surface-card
+10. ✅ `ClassroomViewPage.jsx` — "Coming soon" placeholder
+
+All verified in real Playwright/Chromium browser. Zero Phase 1 regressions.
+
+**Known, accepted gaps (carried from Phase 1, not fixed):**
+- Renaming a teacher/classroom doesn't retroactively relabel rows created before the rename.
+- Calendar page generates ~30 console 404s per month view (per-day existence probes, all handled).
 
 ## Next Steps
 
-- No outstanding work queued. Phase 2 items are explicitly out of scope (see the project plan's exclusion list: SMS/email, Google OAuth, RBAC, dashboard date nav, automated floater notifications, reporting, integrations, mobile, forgot-password) — do not start any of them without the user asking first.
-- If the user reports something broken: reproduce it for real in the browser first (see the Playwright recipe above) before assuming it's a code-reading exercise — two real bugs this session were only found that way, not via API scripting.
+**Classroom View** — user must provide the full spec before any implementation. Placeholder at `/classroom-view` is sufficient until then.
+
+**Critical constraint remains:** No alterations to any Phase 1 file. Phase 2 is purely additive.
 
 ## Blockers (historical, mostly resolved)
 
