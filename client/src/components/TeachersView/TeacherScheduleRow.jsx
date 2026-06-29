@@ -26,6 +26,15 @@ const STATE_COLORS = {
   6: { bg: '#9ca3af', color: '#374151' },
 };
 
+// Short labels for the grid cells — fit within narrow single-slot cells (55px).
+// Full labels remain in the tooltip (title) and the print table.
+const CELL_LABELS = {
+  1: 'Not in',
+  3: 'Break',
+  5: 'In ctr',
+  6: 'Left',
+};
+
 const DEFAULT_COLORS = STATE_COLORS[1];
 
 function groupSlots(slots) {
@@ -78,7 +87,9 @@ export default function TeacherScheduleRow({ teacherName, slots }) {
             role="gridcell"
             aria-label={`${group.startTime}–${group.endTime}: ${group.fullLabel}`}
           >
-            <span className="tv-cell__label">{group.label}</span>
+            <span className="tv-cell__label">
+              {group.state === 2 ? group.label : CELL_LABELS[group.state] ?? group.label}
+            </span>
           </div>
         );
       })}

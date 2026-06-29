@@ -4,6 +4,7 @@ const teacherRoutes = require('./routes/teacherRoutes');
 const classroomRoutes = require('./routes/classroomRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const teacherViewRoutes = require('./routes/teacherViewRoutes');
+const classroomViewRoutes = require('./routes/classroomViewRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -15,6 +16,7 @@ app.use('/api/teachers', teacherRoutes);
 app.use('/api/classrooms', classroomRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api', teacherViewRoutes);
+app.use('/api', classroomViewRoutes);
 
 app.use(errorHandler);
 

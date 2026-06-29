@@ -72,10 +72,22 @@ button {
   flex: 0 0 auto;
 }
 
+.app-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.app-header__logo:hover .app-header__name {
+  color: var(--color-accent);
+}
+
 .app-header__name {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-text);
+  transition: color 0.12s ease;
 }
 
 .surface-card {

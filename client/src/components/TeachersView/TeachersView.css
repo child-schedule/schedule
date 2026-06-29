@@ -314,8 +314,9 @@ main.tv-result-page {
  */
 .tv-grid {
   display: grid;
-  grid-template-columns: 180px repeat(22, 1fr) 36px;
+  grid-template-columns: 180px repeat(22, minmax(55px, 1fr)) 36px;
   width: 100%;
+  min-width: 1426px;
   border: 1px solid var(--color-border);
   border-radius: 14px;
   box-shadow: var(--shadow-card);
@@ -430,4 +431,254 @@ main.tv-result-page {
   /* Sit above the gradient lines */
   position: relative;
   z-index: 1;
+}
+
+/* ── View mode selector ── */
+.tv-mode-selector {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tv-mode-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.tv-mode-btn--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.tv-mode-btn:hover:not(.tv-mode-btn--active) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ── Summary table (screen) ── */
+.tv-summary-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.tv-summary-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.tv-summary-period {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.tv-summary-scroll {
+  overflow-x: auto;
+}
+
+.tv-summary-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.tv-summary-table th {
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  border-bottom: 2px solid var(--color-border);
+  background: #fafbfa;
+  white-space: nowrap;
+}
+
+.tv-summary-table td {
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.tv-summary-day {
+  color: var(--color-text-muted);
+  font-size: 0.82rem !important;
+}
+
+.tv-summary-row {
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.tv-summary-row:hover td {
+  background: var(--color-accent-soft);
+}
+
+.tv-summary-break {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.tv-summary-break--yes {
+  color: #d97706;
+  font-weight: 600;
+}
+
+/* ── Print button (screen only) ── */
+.tv-result-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.tv-print-btn {
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.tv-print-btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* ── Print-only section (hidden on screen) ── */
+.tv-print-only {
+  display: none;
+}
+
+/* ── Print styles ── */
+@media print {
+  /* Hide all screen elements */
+  .app-header,
+  .back-link,
+  .tv-result-card {
+    display: none !important;
+  }
+
+  /* Show print section */
+  .tv-print-only {
+    display: block !important;
+  }
+
+  /* Strip page background and padding */
+  main.tv-result-page {
+    background: none !important;
+    min-height: unset !important;
+    padding: 0 !important;
+    max-width: unset !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  @page {
+    margin: 2cm;
+    size: A4 portrait;
+  }
+
+  /* Print header */
+  .tv-print-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #333;
+    padding-bottom: 1rem;
+  }
+
+  .tv-print-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+
+  .tv-print-teacher {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.25rem 0;
+  }
+
+  .tv-print-date {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 0;
+  }
+
+  /* Print table */
+  .tv-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tv-print-table th {
+    background: #f3f4f6;
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    border: 1px solid #d1d5db;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .tv-print-table td {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #d1d5db;
+    vertical-align: middle;
+  }
+
+  /* Colour-coded left border per state — visible in colour print,
+     border still present in B&W so rows stay distinguishable */
+  .tv-print-table tr[data-state="1"] td:first-child { border-left: 4px solid #64748b; }
+  .tv-print-table tr[data-state="2"] td:first-child { border-left: 4px solid #16a34a; }
+  .tv-print-table tr[data-state="3"] td:first-child { border-left: 4px solid #d97706; }
+  .tv-print-table tr[data-state="5"] td:first-child { border-left: 4px solid #7c3aed; }
+  .tv-print-table tr[data-state="6"] td:first-child { border-left: 4px solid #9ca3af; }
+
+  /* Alternating row shading for readability */
+  .tv-print-table tbody tr:nth-child(even) td {
+    background: #f9fafb;
+  }
+
+  /* Footer */
+  .tv-print-footer {
+    font-size: 0.78rem;
+    color: #888;
+    text-align: right;
+  }
+
+  /* Multi-day sections — each day stays together, never splits across pages */
+  .tv-print-day {
+    page-break-inside: avoid;
+    margin-bottom: 1.75rem;
+  }
+
+  .tv-print-day__heading {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #ccc;
+    color: #111;
+  }
 }
