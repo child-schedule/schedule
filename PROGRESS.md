@@ -382,6 +382,21 @@ This fix is complete as of 2026-07-09. Left uncommitted, per instructions.
 
 **This was the last queued fix from the user's bug report round.** All five reported/found issues — (1) dead/stale data-reference fix, (2) click-through hardening against future dead references, (3) explicit "Meet Front Office" state instead of falling through to a generic gap label, (4) missing print colors, and (5) the print end-cap column not merging with its row — are now built, browser-verified against real data, and awaiting the user's review. Still uncommitted, per instructions (no `git commit` run this round).
 
+## Session 2026-07-09 — Deployment + login password change
+
+**App deployed live**, on top of the Phase 3 build + bug-fix round above:
+- Frontend on Vercel (`client/`) at `https://schedule-nine-zeta.vercel.app`.
+- Backend on Render (`server/`) at `https://childcare-scheduler-backend.onrender.com`.
+- Database unchanged — same MongoDB Atlas cluster.
+- Both `VITE_API_BASE_URL` and `CLIENT_URL` (CORS origin) were already environment-variable-driven in the existing code, so no code changes were needed to split frontend/backend across hosts.
+- Fixed a real SPA-routing bug found during live verification: direct navigation to any client-side route (e.g. `/schedule/2026-06-23`) 404'd on Vercel's static host since only `index.html` exists on disk. Fixed with `client/vercel.json` (rewrite-all-to-`index.html`) — commit `c1e4077`.
+- GitHub repo `child-schedule/schedule` was switched from private to public — Vercel's free Hobby plan blocks git-triggered auto-deploys on private repos unless the committer is a recognized project collaborator, which Hobby plan doesn't support adding for private repos. **The source code is now publicly visible on GitHub** (no secrets exposed — `.env` was never committed — but this was a deliberate tradeoff, not incidental).
+- Full detail and setup steps in `../DEPLOYMENT_SETUP.md`.
+
+**Login password changed:** `class`/`classroom` → `class`/`classroom2026`. The word "classroom" alone is a common dictionary string that appears in leaked-password compilations Chrome/Google Password Manager checks against, triggering a "found in a data breach" warning on every login (a browser-level check against a public breach corpus, unrelated to any actual breach of this app). Changed in `client/src/context/AuthContext.jsx`'s `VALID_PASSWORD` constant (only place it was defined) — commit `b4c320c`. Verified live: old password now rejected, new password accepted.
+
+**Show/hide password toggle added to the login form** — an eye-icon button inside the password field (`LoginPage.jsx`/`LoginPage.css`) toggles the input between `type="password"` and `type="text"` so the user can verify what they typed before submitting. Inline SVG icons (not emoji, matching this project's existing "no emoji, professional look" convention — see the 2026-06-29 Landing Page note above). Verified: toggling switches the input type and reveals/hides the typed value correctly both directions, and submitting still logs in correctly afterward.
+
 ## Known, accepted, not-yet-addressed
 
 - A schedule document dated the literal string `"garbage-date"` was found sitting in the database during the Fix-1 data scan — almost certainly a pre-existing leftover from testing the `validateDateParam` middleware (see the Phase-1 "independent review" session above) from before that validation existed. Harmless (never reachable through the UI, which only ever requests valid `YYYY-MM-DD` dates), not touched since it wasn't part of what was being fixed — flagged to the user, left in place pending their call.

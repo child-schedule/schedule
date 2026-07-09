@@ -61,6 +61,40 @@
   box-shadow: 0 0 0 3px rgba(47, 111, 79, 0.12);
 }
 
+.login-form__password-wrap {
+  position: relative;
+  display: flex;
+}
+
+.login-form__password-wrap input {
+  flex: 1;
+  padding-right: 2.5rem;
+}
+
+.login-form__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: var(--color-text);
+  background: var(--color-border);
+}
+
 .login-error {
   color: #b3261e;
   background: #fdeceb;
