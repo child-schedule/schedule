@@ -1,23 +1,74 @@
 import TimeBlock from './TimeBlock';
 import { findBlockForSlot } from '../../utils/timeSlots';
+import { useTeachers } from '../../context/TeachersContext';
+import { useClassrooms } from '../../context/ClassroomsContext';
+import { parseRowLabel } from '../../utils/rowLabel';
 
 function ScheduleRow({
   rowLabel,
   blocks,
   slots,
+  teacherId,
+  classroomId,
   isPlaceholder,
   onSlotMouseDown,
   onSlotMouseEnter,
   isSlotSelected,
   onDeleteRow,
+  onTeacherClick,
+  onClassroomClick,
 }) {
+  const { teachers } = useTeachers();
+  const { classrooms } = useClassrooms();
   const lastIndex = slots.length - 1;
   const lastBlock = findBlockForSlot(blocks, slots[lastIndex]);
+
+  // Real rows carry teacherId/classroomId — look up their current display
+  // names so each half of the row label can be clicked independently (opens
+  // DayDetailModal via onTeacherClick/onClassroomClick).
+  //
+  // If a live lookup fails (e.g. the teacher/classroom was deleted after
+  // this row was created — see PROGRESS.md), fall back to parsing this
+  // row's own frozen `rowLabel` string instead of going straight to a
+  // plain, non-clickable label. The click handlers still fire with the
+  // row's real stored ids either way, so DayDetailModal's aggregation-by-id
+  // keeps working even when the name shown is a stale, parsed-from-rowLabel
+  // one. Only the placeholder "+ Add" row, or a row whose rowLabel itself
+  // is empty/malformed (shouldn't normally happen), falls all the way back
+  // to a plain span.
+  const liveTeacherName = !isPlaceholder ? teachers.find((t) => t._id === teacherId)?.name : null;
+  const liveClassroomName = !isPlaceholder ? classrooms.find((c) => c._id === classroomId)?.name : null;
+  const parsedLabel =
+    !isPlaceholder && (!liveTeacherName || !liveClassroomName) ? parseRowLabel(rowLabel) : null;
+
+  const teacherName = liveTeacherName || parsedLabel?.teacherName || null;
+  const classroomName = liveClassroomName || parsedLabel?.classroomName || null;
+  const canSplitLabel = Boolean(teacherName && classroomName);
 
   return (
     <div className={`schedule-row${isPlaceholder ? ' schedule-row--placeholder' : ''}`}>
       <div className="schedule-row__label">
-        <span className="schedule-row__label-text">{rowLabel}</span>
+        {canSplitLabel ? (
+          <span className="schedule-row__label-text">
+            <button
+              type="button"
+              className="schedule-row__name-link"
+              onClick={() => onClassroomClick(classroomId)}
+            >
+              {classroomName}
+            </button>
+            {' - '}
+            <button
+              type="button"
+              className="schedule-row__name-link"
+              onClick={() => onTeacherClick(teacherId)}
+            >
+              {teacherName}
+            </button>
+          </span>
+        ) : (
+          <span className="schedule-row__label-text">{rowLabel}</span>
+        )}
         {!isPlaceholder && (
           <button
             type="button"

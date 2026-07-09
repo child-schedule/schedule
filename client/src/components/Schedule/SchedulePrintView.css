@@ -1,0 +1,193 @@
+/* Hidden on screen — only shown inside @media print below. Same convention
+   as the archived Teachers View / Classroom View print sections
+   (`.tv-print-only` / `.cv-print-only` in _archive/phase2-landing-and-views.archive.jsx). */
+.schedule-print-only {
+  display: none;
+}
+
+@media print {
+  .app-header,
+  .back-link,
+  .schedule-page__heading,
+  .schedule-card {
+    display: none !important;
+  }
+
+  .schedule-print-only {
+    display: block !important;
+  }
+
+  /* Chromium/Firefox strip background colors when printing unless the page
+     explicitly opts in. Without this, all the ratio-status colors below
+     (swatches + grid blocks) print as plain white regardless of the
+     browser's "Background graphics" print-dialog setting. */
+  .schedule-print-only,
+  .schedule-print-only * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main.schedule-page {
+    background: none !important;
+    min-height: unset !important;
+    padding: 0 !important;
+    max-width: unset !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  /* Landscape: the grid has 24 columns (label + 22 half-hour slots +
+     closing boundary) and needs the extra horizontal room. */
+  @page {
+    margin: 1cm;
+    size: A4 landscape;
+  }
+
+  .schedule-print__header {
+    text-align: center;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #333;
+    padding-bottom: 0.75rem;
+  }
+
+  .schedule-print__header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+
+  .schedule-print__date {
+    font-size: 1rem;
+    color: #555;
+    margin: 0;
+  }
+
+  .schedule-print__legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .schedule-print__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .schedule-print__swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    display: inline-block;
+  }
+
+  .schedule-print__swatch--green {
+    background: #4caf6f;
+  }
+
+  .schedule-print__swatch--yellow {
+    background: #f0c14b;
+  }
+
+  .schedule-print__swatch--orange {
+    background: #d64545;
+  }
+
+  .schedule-print__empty {
+    text-align: center;
+    color: #555;
+    font-style: italic;
+  }
+
+  .schedule-print__grid {
+    display: grid;
+    grid-template-columns: 140px repeat(22, 1fr) 24px;
+    width: 100%;
+    border: 1px solid #333;
+  }
+
+  .schedule-print__cell {
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #ccc;
+    min-width: 0;
+  }
+
+  .schedule-print__corner {
+    background: #f3f4f6;
+  }
+
+  .schedule-print__row-label {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .schedule-print__slot-label {
+    font-size: 0.5rem;
+    text-align: center;
+    padding: 0.3rem 0.05rem;
+    color: #555;
+    background: #f3f4f6;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .schedule-print__slot-label--hour {
+    font-weight: 700;
+    color: #111;
+    border-right: 1px solid #999;
+  }
+
+  .schedule-print__end-cap {
+    border-right: none;
+  }
+
+  .schedule-print__end-cap--label {
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.3rem 0.05rem;
+    color: #111;
+    background: #f3f4f6;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .schedule-print__block {
+    height: 22px;
+  }
+
+  .schedule-print__block--green {
+    background: #4caf6f;
+  }
+
+  .schedule-print__block--yellow {
+    background: #f0c14b;
+  }
+
+  .schedule-print__block--orange {
+    background: #d64545;
+  }
+
+  .schedule-print__block--white {
+    background: #fff;
+  }
+
+  .schedule-print__footer {
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
+    color: #888;
+    text-align: right;
+  }
+}

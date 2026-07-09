@@ -1,0 +1,201 @@
+.day-detail-modal {
+  max-width: 1500px;
+}
+
+.day-detail__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.day-detail__header h2 {
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.day-detail__date {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.day-detail__close {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.day-detail__close:hover {
+  background: #fdeceb;
+  color: #b3261e;
+}
+
+.day-detail__empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+.day-detail__scroll {
+  overflow-x: auto;
+}
+
+/* ── Teacher day grid ── */
+
+.tdg-grid {
+  display: grid;
+  grid-template-columns: 160px repeat(22, minmax(50px, 1fr)) 34px;
+  width: 100%;
+  min-width: 1300px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tdg-grid__corner {
+  background: #fafbfa;
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.tdg-grid__label-cell {
+  padding: 0.65rem 0.6rem 0.65rem 0.85rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  background: var(--color-surface);
+  text-transform: capitalize;
+}
+
+.tdg-grid__label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tdg-grid__slot-label {
+  font-size: 0.66rem;
+  text-align: left;
+  padding: 0.5rem 0.1rem 0.5rem 3px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid #eceef1;
+  white-space: nowrap;
+  overflow: hidden;
+  background: #fafbfa;
+}
+
+.tdg-grid__slot-label--hour {
+  font-weight: 700;
+  color: var(--color-text);
+  border-right: 1px solid #d0d2d8;
+}
+
+.tdg-grid__end-cap {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tdg-grid__end-cap--label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.5rem 0.1rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  background: #fafbfa;
+}
+
+.tdg-cell {
+  min-width: 0;
+  height: 48px;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.tdg-cell__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Classroom day grid ── */
+
+.cdg-grid {
+  display: grid;
+  grid-template-columns: 150px repeat(23, minmax(46px, 1fr));
+  min-width: 1250px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cdg-grid__corner {
+  background: #fafbfa;
+  border-right: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.cdg-grid__time-cell {
+  padding: 0.3rem 0.1rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+  background: #fafbfa;
+  border-bottom: 2px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.cdg-grid__label-cell {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text);
+  background: #fafbfa;
+  border-right: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  text-transform: capitalize;
+  word-break: break-word;
+}
+
+.cdg-grid__cell {
+  padding: 0.5rem 0.35rem;
+  min-height: 54px;
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

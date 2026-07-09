@@ -2,9 +2,12 @@ import { useState } from 'react';
 import ScheduleRow from './ScheduleRow';
 import AssignmentDropdown from '../Dropdown/AssignmentDropdown';
 import BlockContextMenu from '../Block/BlockContextMenu';
+import DeleteRowModal from './DeleteRowModal';
+import DayDetailModal from './DayDetailModal';
 import { useDragSelect } from '../../hooks/useDragSelect';
 import { generateTimeSlots, formatDisplayTime, findBlockForSlot } from '../../utils/timeSlots';
 import { deleteRow } from '../../api/scheduleApi';
+import { formatLongDate } from '../../utils/dateHelpers';
 import './ScheduleGrid.css';
 
 // Virtual row id for the trailing "add new row" affordance. The grid starts
@@ -30,6 +33,12 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
   const rows = schedule.draftRows;
   const [pendingSelection, setPendingSelection] = useState(null);
   const [pendingBlockMenu, setPendingBlockMenu] = useState(null);
+  const [pendingDeleteRow, setPendingDeleteRow] = useState(null);
+  const [isDeletingRow, setIsDeletingRow] = useState(false);
+  // Which teacher/classroom's day view is open in DayDetailModal — see
+  // childcare-scheduling-phase3-plan.md §3. `rows` (draftRows) is passed to
+  // the modal directly so it always reflects the live, unsaved draft.
+  const [activeDetail, setActiveDetail] = useState(null);
 
   function handleSelectionComplete(rowId, startIndex, endIndex) {
     const startTime = slots[startIndex].start;
@@ -78,9 +87,20 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
 
   const { startDrag, extendDrag, isSlotSelected } = useDragSelect(handleSelectionComplete);
 
-  async function handleDeleteRow(rowId) {
-    const updated = await deleteRow(date, rowId);
-    onScheduleUpdate(updated);
+  function handleRequestDeleteRow(rowId, rowLabel) {
+    setPendingDeleteRow({ rowId, rowLabel });
+  }
+
+  async function handleConfirmDeleteRow() {
+    if (!pendingDeleteRow) return;
+    setIsDeletingRow(true);
+    try {
+      const updated = await deleteRow(date, pendingDeleteRow.rowId);
+      onScheduleUpdate(updated);
+      setPendingDeleteRow(null);
+    } finally {
+      setIsDeletingRow(false);
+    }
   }
 
   function handleEditBlock(block) {
@@ -129,10 +149,14 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
           rowLabel={row.rowLabel}
           blocks={row.blocks}
           slots={slots}
+          teacherId={row.teacherId}
+          classroomId={row.classroomId}
           onSlotMouseDown={(index) => startDrag(row.rowId, index)}
           onSlotMouseEnter={(index) => extendDrag(row.rowId, index)}
           isSlotSelected={(index) => isSlotSelected(row.rowId, index)}
-          onDeleteRow={() => handleDeleteRow(row.rowId)}
+          onDeleteRow={() => handleRequestDeleteRow(row.rowId, row.rowLabel)}
+          onTeacherClick={(teacherId) => setActiveDetail({ type: 'teacher', id: teacherId })}
+          onClassroomClick={(classroomId) => setActiveDetail({ type: 'classroom', id: classroomId })}
         />
       ))}
 
@@ -167,6 +191,21 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
         onEdit={handleEditBlock}
         onScheduleUpdate={onScheduleUpdate}
         onClose={() => setPendingBlockMenu(null)}
+      />
+
+      <DeleteRowModal
+        isOpen={Boolean(pendingDeleteRow)}
+        rowLabel={pendingDeleteRow?.rowLabel}
+        isDeleting={isDeletingRow}
+        onConfirm={handleConfirmDeleteRow}
+        onCancel={() => setPendingDeleteRow(null)}
+      />
+
+      <DayDetailModal
+        target={activeDetail}
+        rows={rows}
+        dateLabel={formatLongDate(date)}
+        onClose={() => setActiveDetail(null)}
       />
     </div>
   );

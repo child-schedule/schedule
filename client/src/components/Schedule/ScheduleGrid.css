@@ -110,6 +110,24 @@
   white-space: nowrap;
 }
 
+/* Clickable teacher/classroom name within a row label — opens DayDetailModal
+   with that teacher's/classroom's aggregated day (see ScheduleGrid.jsx). */
+.schedule-row__name-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.schedule-row__name-link:hover,
+.schedule-row__name-link:focus-visible {
+  text-decoration: underline;
+  color: var(--color-accent);
+}
+
 .schedule-row__delete {
   flex: 0 0 auto;
   width: 22px;

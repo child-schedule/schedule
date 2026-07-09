@@ -7,6 +7,7 @@ import CopyDayModal from './CopyDayModal';
 import CopyPreviousModal from './CopyPreviousModal';
 import SaveConfirmModal from './SaveConfirmModal';
 import ScheduleGrid from './ScheduleGrid';
+import SchedulePrintView from './SchedulePrintView';
 
 function describeError(err) {
   return err.response?.data?.error || 'Could not copy the previous day. Try again.';
@@ -108,6 +109,15 @@ function SchedulePage() {
               >
                 {isSaving ? 'Saving…' : 'Save Schedule'}
               </button>
+              <button
+                type="button"
+                className="secondary"
+                disabled={!isPublished}
+                title={isPublished ? undefined : 'Save the schedule before printing'}
+                onClick={() => window.print()}
+              >
+                Print
+              </button>
             </div>
           )}
         </div>
@@ -118,6 +128,7 @@ function SchedulePage() {
             <ScheduleGrid schedule={schedule} date={date} onScheduleUpdate={applyScheduleUpdate} />
           )}
         </div>
+        {!isLoading && <SchedulePrintView dateLabel={formatLongDate(date)} rows={schedule.rows} />}
         <CopyDayModal
           isOpen={showCopyModal}
           previousDateKey={previousDateKey}

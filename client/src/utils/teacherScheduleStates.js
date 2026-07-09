@@ -3,14 +3,21 @@
 //
 // Each slot: { startTime, endTime, state, label, fullLabel }
 // States:
-//   1 — Not in center  (before first block)
-//   2 — In classroom   (green block)
-//   3 — Break          (yellow block)
-//   5 — In center      (gap between two blocks — a later block exists)
-//   6 — Left center    (from last block end onwards, inclusive)
+//   1 — Not in center       (before first green/yellow block)
+//   2 — In classroom        (green block)
+//   3 — Break                (yellow block)
+//   4 — Meet Front Office    (orange block, only when not covered by green/yellow)
+//   5 — In center            (gap between two green/yellow blocks — a later block exists)
+//   6 — Left center          (from last green/yellow block end onwards, inclusive)
 //
-// Orange (Meet Front Office) blocks are intentionally ignored in this view.
-// Their time slots are resolved by the gap/boundary logic above.
+// Per-slot priority:
+//   1. Green or yellow block covering the slot always wins (state 2/3).
+//   2. Otherwise, an orange block covering the slot wins (state 4 — the
+//      teacher is genuinely idle/at the front office, not scheduled elsewhere).
+//   3. Otherwise, fall back to the gap/boundary logic (states 1/5/6), which
+//      is defined purely in terms of green/yellow block boundaries — orange
+//      blocks never move firstStart/lastEnd, they only claim priority for
+//      the specific slots they cover.
 
 const SLOT_COUNT = 22;
 const DAY_START = 7 * 60; // 07:00 in minutes
@@ -31,6 +38,7 @@ const STATUS_TO_STATE = { green: 2, yellow: 3 };
 const STATE_LABELS = {
   1: 'Not in center',
   3: 'Break',
+  4: 'Meet Front Office',
   5: 'In center',
   6: 'Left center',
 };
@@ -38,13 +46,17 @@ const STATE_LABELS = {
 export function buildSlots(blocks) {
   if (!blocks || blocks.length === 0) return [];
 
-  // Orange blocks mark "teacher is in another room" — ignore in Teachers View.
-  // The gap/boundary logic naturally fills those slots as In center or Left center.
-  const activeBlocks = blocks.filter(b => b.status !== 'orange');
-  if (activeBlocks.length === 0) return [];
+  // Green/yellow blocks define both the teacher's actual presence and the
+  // arrival/departure boundaries used by the gap logic below.
+  const activeBlocks = blocks.filter(b => b.status === 'green' || b.status === 'yellow');
+  // Orange blocks only get priority over the gap/boundary fallback (state 4)
+  // for the specific slots they cover — they never redefine the boundaries.
+  const orangeBlocks = blocks.filter(b => b.status === 'orange');
 
-  const firstStart = toMin(activeBlocks[0].startTime);
-  const lastEnd = toMin(activeBlocks[activeBlocks.length - 1].endTime);
+  if (activeBlocks.length === 0 && orangeBlocks.length === 0) return [];
+
+  const firstStart = activeBlocks.length ? toMin(activeBlocks[0].startTime) : null;
+  const lastEnd = activeBlocks.length ? toMin(activeBlocks[activeBlocks.length - 1].endTime) : null;
 
   const slots = [];
 
@@ -54,8 +66,13 @@ export function buildSlots(blocks) {
     const startTime = toTime(slotStart);
     const endTime = toTime(slotEnd);
 
-    // Find a green/yellow block that covers this slot
+    // 1. Find a green/yellow block that covers this slot — always wins.
     const block = activeBlocks.find(
+      b => toMin(b.startTime) <= slotStart && toMin(b.endTime) > slotStart
+    );
+
+    // 2. Otherwise, find an orange block that covers this slot.
+    const orangeBlock = !block && orangeBlocks.find(
       b => toMin(b.startTime) <= slotStart && toMin(b.endTime) > slotStart
     );
 
@@ -68,7 +85,12 @@ export function buildSlots(blocks) {
         : STATE_LABELS[state];
       label = text;
       fullLabel = text;
-    } else if (slotStart < firstStart) {
+    } else if (orangeBlock) {
+      state = 4;
+      label = 'Front Office';
+      fullLabel = STATE_LABELS[4];
+    } else if (firstStart === null || slotStart < firstStart) {
+      // No green/yellow block has started yet (or ever exists for this teacher today).
       state = 1;
       label = STATE_LABELS[1];
       fullLabel = STATE_LABELS[1];

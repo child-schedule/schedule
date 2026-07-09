@@ -23,3 +23,16 @@ export function getPreviousDateKey(dateKey) {
   date.setDate(date.getDate() - 1);
   return formatDateKey(date);
 }
+
+// "2026-07-09" -> "Thursday, July 9, 2026". Shared by anything that needs a
+// human-readable date for the currently-open schedule date (e.g. the
+// in-schedule click-through popup — see DayDetailModal).
+export function formatLongDate(dateKey) {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
