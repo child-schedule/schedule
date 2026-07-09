@@ -6,7 +6,7 @@ const AuthContext = createContext(null);
 // it survives browser restarts (not sessionStorage, which clears on tab close).
 const STORAGE_KEY = 'cc_authenticated';
 const VALID_USERNAME = 'class';
-const VALID_PASSWORD = 'classroom';
+const VALID_PASSWORD = 'classroom2026';
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(
