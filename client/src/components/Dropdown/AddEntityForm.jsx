@@ -19,8 +19,8 @@ function AddEntityForm({ label, placeholder, onAdd, onAdded }) {
       const created = await onAdd(trimmed);
       setName('');
       onAdded(created, keepOpen);
-    } catch {
-      setError('Could not add. Try again.');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not add. Try again.');
     } finally {
       setIsSubmitting(false);
     }

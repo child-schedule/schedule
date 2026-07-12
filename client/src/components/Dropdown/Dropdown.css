@@ -106,6 +106,23 @@
   align-items: stretch;
 }
 
+.entity-selector__row--editing {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.entity-selector__edit-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.entity-selector__edit-error {
+  color: #b3261e;
+  font-size: 0.78rem;
+  margin: 0.2rem 0 0;
+}
+
 .entity-selector__item {
   flex: 1;
   width: 100%;

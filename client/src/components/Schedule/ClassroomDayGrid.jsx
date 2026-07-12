@@ -1,5 +1,5 @@
-import { SLOT_LABELS, GROUP_COLORS, ABSENT_COLOR } from '../../utils/classroomScheduleSlots';
-import { formatDisplayTime } from '../../utils/timeSlots';
+import { GROUP_COLORS, ABSENT_COLOR } from '../../utils/classroomScheduleSlots';
+import { generateTimeSlots, formatDisplayTime, formatSlotRangeLabel } from '../../utils/timeSlots';
 
 function toMin(time) {
   const [h, m] = time.split(':').map(Number);
@@ -14,7 +14,9 @@ function slotSpan(startTime, endTime) {
 // (the output of utils/classroomScheduleSlots.groupClassroomSlots). Adapted
 // from the archived ClassroomResultPage's grid
 // (client/src/_archive/phase2-landing-and-views.archive.jsx) — same grouped
-// color-segment rendering, used inside DayDetailModal.
+// color-segment rendering, used inside DayDetailModal. Header labels: one
+// range label per actual half-hour slot (22 columns), matching the same
+// layout convention as TeacherDayGrid — not the old 23-boundary-tick model.
 function ClassroomDayGrid({ classroomName, groups }) {
   const hasAnyTeacher = groups?.some((g) => g.teacherNames.length > 0);
 
@@ -22,24 +24,27 @@ function ClassroomDayGrid({ classroomName, groups }) {
     return <p className="day-detail__empty">No teachers assigned to {classroomName} today.</p>;
   }
 
+  const timeSlots = generateTimeSlots();
+
   return (
     <div className="day-detail__scroll">
       <div className="cdg-grid">
         <div className="cdg-grid__corner" />
-        {SLOT_LABELS.map((label, i) => (
-          <div key={i} className="cdg-grid__time-cell">
-            {label}
-          </div>
-        ))}
+        {timeSlots.map((slot) => {
+          const { start, end } = formatSlotRangeLabel(slot);
+          return (
+            <div key={slot.start} className="cdg-grid__time-cell">
+              {start}-{end}
+            </div>
+          );
+        })}
 
         <div className="cdg-grid__label-cell">{classroomName}</div>
         {groups.map((group, i) => {
           const isPresent = group.teacherNames.length > 0;
           const presentIndex = groups.slice(0, i).filter((g) => g.teacherNames.length > 0).length;
           const colors = isPresent ? GROUP_COLORS[presentIndex % GROUP_COLORS.length] : ABSENT_COLOR;
-          const isLast = i === groups.length - 1;
-          // Last cell spans 1 extra column to fill the closing-boundary marker.
-          const span = slotSpan(group.startTime, group.endTime) + (isLast ? 1 : 0);
+          const span = slotSpan(group.startTime, group.endTime);
           return (
             <div
               key={i}

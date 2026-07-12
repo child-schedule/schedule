@@ -7,8 +7,10 @@ function overlaps(startA, endA, startB, endB) {
 
 // Mirrors the backend's checkBlockConflict middleware (server/src/middleware/
 // conflictCheck.js) so the same teacher/time overlap can be caught locally
-// before hitting the API. A teacher can't have a green or yellow block in two
-// places at once; orange (floating) is exempt either way.
+// before hitting the API. A teacher can't have a green, yellow, or blue
+// (Lesson Planning) block in two places at once — Lesson Planning counts as
+// the teacher being occupied, same as a real shift or a break. Only orange
+// (Meet Front Office) is exempt.
 export function useConflictCheck() {
   return useCallback((rows, { teacherId, startTime, endTime, status, excludeBlockId }) => {
     if (status === 'orange') return null;

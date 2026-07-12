@@ -32,6 +32,25 @@ export function formatDisplayTime(time) {
   return minutes === '00' ? `${hours} ${period}` : `${hours}:${minutes} ${period}`;
 }
 
+// Landmark times that get a full "AM/PM" suffix on a range label: day start,
+// noon, and day close. Every other time in a range label is abbreviated
+// (e.g. "7:30" not "7:30 AM") since it'd otherwise repeat on every column.
+const NOTABLE_TIMES = new Set(['07:00', '12:00', '18:00']);
+
+// Single time value -> its range-label text (e.g. "7", "7:30", "12 PM").
+export function formatSlotTimeLabel(time) {
+  const full = formatDisplayTime(time);
+  if (NOTABLE_TIMES.has(time)) return full;
+  return full.replace(/ (AM|PM)$/, '');
+}
+
+// A slot's { start, end } -> their range-label text, e.g. { start: '7', end: '7:30' }.
+// Shared by the schedule grid header, the Teachers/Classroom View popups, and print —
+// each of those decides its own layout (stacked lines vs. a single "start-end" string).
+export function formatSlotRangeLabel(slot) {
+  return { start: formatSlotTimeLabel(slot.start), end: formatSlotTimeLabel(slot.end) };
+}
+
 // Shared by the grid header (only the start/noon AM-PM marker) and rows.
 export function findBlockForSlot(blocks, slot) {
   const slotStart = timeToMinutes(slot.start);

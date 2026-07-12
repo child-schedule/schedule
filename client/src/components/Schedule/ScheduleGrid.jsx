@@ -5,7 +5,7 @@ import BlockContextMenu from '../Block/BlockContextMenu';
 import DeleteRowModal from './DeleteRowModal';
 import DayDetailModal from './DayDetailModal';
 import { useDragSelect } from '../../hooks/useDragSelect';
-import { generateTimeSlots, formatDisplayTime, findBlockForSlot } from '../../utils/timeSlots';
+import { generateTimeSlots, findBlockForSlot, formatSlotRangeLabel } from '../../utils/timeSlots';
 import { deleteRow } from '../../api/scheduleApi';
 import { formatLongDate } from '../../utils/dateHelpers';
 import './ScheduleGrid.css';
@@ -16,15 +16,6 @@ import './ScheduleGrid.css';
 // very first assignment (not explicitly described in the project plan; see
 // PROGRESS.md for the reasoning).
 const NEW_ROW_ID = '__new__';
-
-// Short label shown above every half-hour column. AM/PM is only spelled out
-// at the very first slot and at the noon flip, otherwise it'd be repeated on
-// every single column.
-function formatSlotLabel(time, index) {
-  const full = formatDisplayTime(time);
-  if (index === 0 || time === '12:00') return full;
-  return full.replace(/ (AM|PM)$/, '');
-}
 
 function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
   const slots = generateTimeSlots();
@@ -122,20 +113,19 @@ function ScheduleGrid({ schedule, date, onScheduleUpdate }) {
       <div className="schedule-grid__header">
         <div className="schedule-row__label" />
         <div className="schedule-row__slots">
-          {slots.map((slot, index) => {
+          {slots.map((slot) => {
             const isHourMark = slot.start.endsWith(':00');
+            const { start, end } = formatSlotRangeLabel(slot);
             return (
               <div
                 key={slot.start}
                 className={`schedule-grid__slot-label${isHourMark ? ' schedule-grid__slot-label--hour' : ''}`}
               >
-                {formatSlotLabel(slot.start, index)}
+                <span className="schedule-grid__slot-label-line">{start}-</span>
+                <span className="schedule-grid__slot-label-line">{end}</span>
               </div>
             );
           })}
-          <div className="schedule-grid__end-cap schedule-grid__end-cap--label">
-            {formatDisplayTime(slots[slots.length - 1].end)}
-          </div>
         </div>
       </div>
 

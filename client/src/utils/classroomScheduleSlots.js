@@ -12,17 +12,6 @@ function toTime(minutes) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-// Time labels for horizontal grid header: "7:00 AM" … "5:30 PM" … "6:00 PM"
-// 23 labels — the 23rd (6:00 PM) is the closing boundary marker, not a data column.
-export const SLOT_LABELS = Array.from({ length: SLOT_COUNT + 1 }, (_, i) => {
-  const mins = DAY_START + i * 30;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  const period = h >= 12 ? 'PM' : 'AM';
-  const displayH = h > 12 ? h - 12 : h;
-  return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
-});
-
 // Returns 22-slot array with the set of teacher names present at each slot.
 // Used for the print grouped output.
 export function buildClassroomSlots(teachers) {

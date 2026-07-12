@@ -98,6 +98,10 @@
     background: #d64545;
   }
 
+  .schedule-print__swatch--blue {
+    background: #2563eb;
+  }
+
   .schedule-print__empty {
     text-align: center;
     color: #555;
@@ -106,7 +110,7 @@
 
   .schedule-print__grid {
     display: grid;
-    grid-template-columns: 140px repeat(22, 1fr) 24px;
+    grid-template-columns: 140px repeat(22, 1fr);
     width: 100%;
     border: 1px solid #333;
   }
@@ -134,9 +138,10 @@
   }
 
   .schedule-print__slot-label {
-    font-size: 0.5rem;
+    font-size: 0.4rem;
+    letter-spacing: -0.2px;
     text-align: center;
-    padding: 0.3rem 0.05rem;
+    padding: 0.3rem 0.02rem;
     color: #555;
     background: #f3f4f6;
     white-space: nowrap;
@@ -147,21 +152,6 @@
     font-weight: 700;
     color: #111;
     border-right: 1px solid #999;
-  }
-
-  .schedule-print__end-cap {
-    border-right: none;
-  }
-
-  .schedule-print__end-cap--label {
-    font-size: 0.5rem;
-    font-weight: 700;
-    text-align: center;
-    padding: 0.3rem 0.05rem;
-    color: #111;
-    background: #f3f4f6;
-    white-space: nowrap;
-    overflow: hidden;
   }
 
   .schedule-print__block {
@@ -178,6 +168,10 @@
 
   .schedule-print__block--orange {
     background: #d64545;
+  }
+
+  .schedule-print__block--blue {
+    background: #2563eb;
   }
 
   .schedule-print__block--white {

@@ -162,12 +162,20 @@
 .schedule-grid__slot-label {
   flex: 1 1 0;
   min-width: 0;
-  font-size: 0.68rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  line-height: 1.2;
   text-align: center;
-  padding: 0.7rem 0.1rem;
+  padding: 0.4rem 0.1rem;
   color: var(--color-text-muted);
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid #eceef1;
+}
+
+.schedule-grid__slot-label-line {
   white-space: nowrap;
   overflow: hidden;
 }
@@ -181,41 +189,11 @@
 .time-block {
   flex: 1 1 0;
   min-width: 0;
-  height: 52px;
+  height: 44px;
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid #eceef1;
   cursor: pointer;
   transition: background 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
-}
-
-/* Marks the closing boundary (6 PM) after the last half-hour column — every
-   other label marks a slot's start time, so the grid's final edge otherwise
-   never gets a label of its own. */
-.schedule-grid__end-cap {
-  flex: 0 0 36px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.schedule-row .schedule-grid__end-cap {
-  height: 52px;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
-}
-
-.schedule-row .schedule-grid__end-cap:hover {
-  filter: brightness(0.96);
-  box-shadow: inset 0 0 0 2px rgba(47, 111, 79, 0.25);
-}
-
-.schedule-grid__end-cap--label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-align: center;
-  padding: 0.7rem 0.1rem;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 .time-block:hover {
@@ -233,6 +211,10 @@
 
 .time-block--orange {
   background: #d64545;
+}
+
+.time-block--blue {
+  background: #2563eb;
 }
 
 .time-block--white {

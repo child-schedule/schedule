@@ -9,15 +9,19 @@
 //   4 — Meet Front Office    (orange block, only when not covered by green/yellow)
 //   5 — In center            (gap between two green/yellow blocks — a later block exists)
 //   6 — Left center          (from last green/yellow block end onwards, inclusive)
+//   7 — Lesson Planning      (blue block, only when not covered by green/yellow)
 //
 // Per-slot priority:
 //   1. Green or yellow block covering the slot always wins (state 2/3).
-//   2. Otherwise, an orange block covering the slot wins (state 4 — the
-//      teacher is genuinely idle/at the front office, not scheduled elsewhere).
+//   2. Otherwise, an orange block covering the slot wins (state 4), then a
+//      blue block (state 7) — both mean the teacher is genuinely idle/away
+//      from a classroom, not scheduled elsewhere. If both an orange and a
+//      blue block somehow cover the same slot (e.g. across different rows),
+//      orange wins — an arbitrary but documented tie-break.
 //   3. Otherwise, fall back to the gap/boundary logic (states 1/5/6), which
 //      is defined purely in terms of green/yellow block boundaries — orange
-//      blocks never move firstStart/lastEnd, they only claim priority for
-//      the specific slots they cover.
+//      and blue blocks never move firstStart/lastEnd, they only claim
+//      priority for the specific slots they cover.
 
 const SLOT_COUNT = 22;
 const DAY_START = 7 * 60; // 07:00 in minutes
@@ -41,6 +45,7 @@ const STATE_LABELS = {
   4: 'Meet Front Office',
   5: 'In center',
   6: 'Left center',
+  7: 'Lesson Planning',
 };
 
 export function buildSlots(blocks) {
@@ -49,11 +54,13 @@ export function buildSlots(blocks) {
   // Green/yellow blocks define both the teacher's actual presence and the
   // arrival/departure boundaries used by the gap logic below.
   const activeBlocks = blocks.filter(b => b.status === 'green' || b.status === 'yellow');
-  // Orange blocks only get priority over the gap/boundary fallback (state 4)
-  // for the specific slots they cover — they never redefine the boundaries.
+  // Orange/blue blocks only get priority over the gap/boundary fallback
+  // (state 4/7) for the specific slots they cover — they never redefine
+  // the boundaries.
   const orangeBlocks = blocks.filter(b => b.status === 'orange');
+  const blueBlocks = blocks.filter(b => b.status === 'blue');
 
-  if (activeBlocks.length === 0 && orangeBlocks.length === 0) return [];
+  if (activeBlocks.length === 0 && orangeBlocks.length === 0 && blueBlocks.length === 0) return [];
 
   const firstStart = activeBlocks.length ? toMin(activeBlocks[0].startTime) : null;
   const lastEnd = activeBlocks.length ? toMin(activeBlocks[activeBlocks.length - 1].endTime) : null;
@@ -71,8 +78,11 @@ export function buildSlots(blocks) {
       b => toMin(b.startTime) <= slotStart && toMin(b.endTime) > slotStart
     );
 
-    // 2. Otherwise, find an orange block that covers this slot.
+    // 2. Otherwise, find an orange block that covers this slot, then a blue one.
     const orangeBlock = !block && orangeBlocks.find(
+      b => toMin(b.startTime) <= slotStart && toMin(b.endTime) > slotStart
+    );
+    const blueBlock = !block && !orangeBlock && blueBlocks.find(
       b => toMin(b.startTime) <= slotStart && toMin(b.endTime) > slotStart
     );
 
@@ -89,6 +99,10 @@ export function buildSlots(blocks) {
       state = 4;
       label = 'Front Office';
       fullLabel = STATE_LABELS[4];
+    } else if (blueBlock) {
+      state = 7;
+      label = 'Lesson Planning';
+      fullLabel = STATE_LABELS[7];
     } else if (firstStart === null || slotStart < firstStart) {
       // No green/yellow block has started yet (or ever exists for this teacher today).
       state = 1;

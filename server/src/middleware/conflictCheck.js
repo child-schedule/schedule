@@ -11,8 +11,11 @@ function overlaps(startA, endA, startB, endB) {
   return timeToMinutes(startA) < timeToMinutes(endB) && timeToMinutes(startB) < timeToMinutes(endA);
 }
 
-// A teacher cannot have a Green or Yellow block in two different rows (or twice
-// in the same row) at the same time slot. Orange blocks are exempt.
+// A teacher cannot have a Green, Yellow, or Blue (Lesson Planning) block in
+// two different rows (or twice in the same row) at the same time slot —
+// Lesson Planning counts as the teacher being occupied, just like a real
+// shift or a break, so it blocks other assignments the same way. Only
+// Orange (Meet Front Office) is exempt.
 async function checkBlockConflict(req, res, next) {
   try {
     const { date, rowId } = req.params;

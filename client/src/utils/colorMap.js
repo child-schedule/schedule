@@ -2,6 +2,7 @@ const STATUS_LABELS = {
   green: 'Active Shift',
   yellow: 'Break',
   orange: 'Meet Front Office',
+  blue: 'Lesson Planning',
   white: 'Empty',
 };
 

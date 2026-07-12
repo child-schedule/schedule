@@ -1,4 +1,4 @@
-import { generateTimeSlots, formatDisplayTime } from '../../utils/timeSlots';
+import { generateTimeSlots, formatDisplayTime, formatSlotRangeLabel } from '../../utils/timeSlots';
 
 // Color/label conventions adapted from the archived TeacherScheduleRow
 // (client/src/_archive/phase2-landing-and-views.archive.jsx) — kept
@@ -10,6 +10,7 @@ const STATE_COLORS = {
   4: { bg: '#dc2626', color: '#ffffff' },
   5: { bg: '#7c3aed', color: '#ffffff' },
   6: { bg: '#9ca3af', color: '#374151' },
+  7: { bg: '#2563eb', color: '#ffffff' },
 };
 
 // Short labels for the narrow grid cells — full text lives in the tooltip.
@@ -19,15 +20,10 @@ const CELL_LABELS = {
   4: 'Front Office',
   5: 'In ctr',
   6: 'Left',
+  7: 'Lesson Plan',
 };
 
 const DEFAULT_COLORS = STATE_COLORS[1];
-
-function formatSlotLabel(time, index) {
-  const full = formatDisplayTime(time);
-  if (index === 0 || time === '12:00') return full;
-  return full.replace(/ (AM|PM)$/, '');
-}
 
 // Merges consecutive slots that share the same state + label into a single
 // spanning cell — same grouping the archived TeacherScheduleRow used.
@@ -57,24 +53,23 @@ function TeacherDayGrid({ teacherName, slots }) {
   }
 
   const groups = groupSlots(slots);
-  const lastColors = STATE_COLORS[groups[groups.length - 1]?.state] ?? DEFAULT_COLORS;
 
   return (
     <div className="day-detail__scroll">
       <div className="tdg-grid" role="grid" aria-label={`${teacherName} schedule`}>
         <div className="tdg-grid__corner" role="columnheader" />
-        {timeSlots.map((slot, index) => (
-          <div
-            key={slot.start}
-            className={`tdg-grid__slot-label${slot.start.endsWith(':00') ? ' tdg-grid__slot-label--hour' : ''}`}
-            role="columnheader"
-          >
-            {formatSlotLabel(slot.start, index)}
-          </div>
-        ))}
-        <div className="tdg-grid__end-cap tdg-grid__end-cap--label" role="columnheader">
-          {formatDisplayTime(timeSlots[timeSlots.length - 1].end)}
-        </div>
+        {timeSlots.map((slot) => {
+          const { start, end } = formatSlotRangeLabel(slot);
+          return (
+            <div
+              key={slot.start}
+              className={`tdg-grid__slot-label${slot.start.endsWith(':00') ? ' tdg-grid__slot-label--hour' : ''}`}
+              role="columnheader"
+            >
+              {start}-{end}
+            </div>
+          );
+        })}
 
         <div className="tdg-grid__label-cell" role="gridcell">
           <span className="tdg-grid__label-text">{teacherName}</span>
@@ -101,7 +96,6 @@ function TeacherDayGrid({ teacherName, slots }) {
             </div>
           );
         })}
-        <div className="tdg-grid__end-cap" style={{ backgroundColor: lastColors.bg }} aria-hidden="true" />
       </div>
     </div>
   );

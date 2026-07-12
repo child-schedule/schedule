@@ -20,8 +20,6 @@ function ScheduleRow({
 }) {
   const { teachers } = useTeachers();
   const { classrooms } = useClassrooms();
-  const lastIndex = slots.length - 1;
-  const lastBlock = findBlockForSlot(blocks, slots[lastIndex]);
 
   // Real rows carry teacherId/classroomId — look up their current display
   // names so each half of the row label can be clicked independently (opens
@@ -94,15 +92,6 @@ function ScheduleRow({
             />
           );
         })}
-        {/* Visual continuation of the last column (so the "6 PM" boundary
-            marker is draggable too, instead of being dead space). */}
-        <div
-          className={`schedule-grid__end-cap time-block--${lastBlock ? lastBlock.status : 'white'}${
-            isSlotSelected(lastIndex) ? ' time-block--selected' : ''
-          }`}
-          onMouseDown={() => onSlotMouseDown(lastIndex)}
-          onMouseEnter={() => onSlotMouseEnter(lastIndex)}
-        />
       </div>
     </div>
   );

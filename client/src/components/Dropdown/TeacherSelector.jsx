@@ -7,16 +7,24 @@ function TeacherSelector({ selectedId, onSelect }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState('');
+  const [editError, setEditError] = useState(null);
 
   function startEditing(teacher) {
     setEditingId(teacher._id);
     setEditingName(teacher.name);
+    setEditError(null);
   }
 
   async function saveEdit() {
     const trimmed = editingName.trim();
-    if (trimmed) await renameTeacher(editingId, trimmed);
-    setEditingId(null);
+    if (!trimmed) return;
+    try {
+      await renameTeacher(editingId, trimmed);
+      setEditingId(null);
+      setEditError(null);
+    } catch (err) {
+      setEditError(err.response?.data?.error || 'Could not rename. Try again.');
+    }
   }
 
   return (
@@ -25,24 +33,27 @@ function TeacherSelector({ selectedId, onSelect }) {
       <ul className="entity-selector__list">
         {teachers.map((teacher) =>
           editingId === teacher._id ? (
-            <li key={teacher._id} className="entity-selector__row">
-              <input
-                type="text"
-                className="entity-selector__edit-input"
-                value={editingName}
-                autoFocus
-                onChange={(e) => setEditingName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') saveEdit();
-                  if (e.key === 'Escape') setEditingId(null);
-                }}
-              />
-              <button type="button" className="entity-selector__save" onClick={saveEdit}>
-                Save
-              </button>
-              <button type="button" className="entity-selector__cancel" onClick={() => setEditingId(null)}>
-                Cancel
-              </button>
+            <li key={teacher._id} className="entity-selector__row entity-selector__row--editing">
+              <div className="entity-selector__edit-row">
+                <input
+                  type="text"
+                  className="entity-selector__edit-input"
+                  value={editingName}
+                  autoFocus
+                  onChange={(e) => setEditingName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') saveEdit();
+                    if (e.key === 'Escape') setEditingId(null);
+                  }}
+                />
+                <button type="button" className="entity-selector__save" onClick={saveEdit}>
+                  Save
+                </button>
+                <button type="button" className="entity-selector__cancel" onClick={() => setEditingId(null)}>
+                  Cancel
+                </button>
+              </div>
+              {editError && <p className="entity-selector__edit-error">{editError}</p>}
             </li>
           ) : (
             <li key={teacher._id} className="entity-selector__row">

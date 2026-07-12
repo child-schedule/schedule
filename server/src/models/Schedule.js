@@ -5,7 +5,7 @@ const blockSchema = new mongoose.Schema({
   blockId: { type: String, default: uuidv4 },
   startTime: { type: String, required: true },
   endTime: { type: String, required: true },
-  status: { type: String, enum: ['green', 'yellow', 'orange'], required: true },
+  status: { type: String, enum: ['green', 'yellow', 'orange', 'blue'], required: true },
 }, { _id: false });
 
 const rowSchema = new mongoose.Schema({

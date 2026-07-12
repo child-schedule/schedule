@@ -124,8 +124,8 @@ async function addOrUpdateBlock(req, res, next) {
     if (!startTime || !endTime || !status) {
       return res.status(400).json({ error: 'startTime, endTime and status are required' });
     }
-    if (!['green', 'yellow', 'orange'].includes(status)) {
-      return res.status(400).json({ error: 'status must be green, yellow, or orange' });
+    if (!['green', 'yellow', 'orange', 'blue'].includes(status)) {
+      return res.status(400).json({ error: 'status must be green, yellow, orange, or blue' });
     }
 
     const { schedule, currentRow } = req;
