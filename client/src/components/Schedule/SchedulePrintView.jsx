@@ -7,11 +7,20 @@ import './SchedulePrintView.css';
 // the absence of an assignment, not something that needs explaining.
 const LEGEND_STATUSES = ['green', 'yellow', 'orange', 'blue'];
 
+// Print-only wording override — the on-screen dropdown/context-menu/tooltips
+// (colorMap.js's getStatusLabel) keep saying "Active Shift"; only the
+// printed legend should read "Supervision" for the same green status.
+const PRINT_LABEL_OVERRIDES = { green: 'Supervision' };
+
+function printStatusLabel(status) {
+  return PRINT_LABEL_OVERRIDES[status] || getStatusLabel(status);
+}
+
 // Print-only rendering of the *published* schedule (schedule.rows), reusing
 // the same slot-grid logic ScheduleGrid/ScheduleRow use for the on-screen
 // draft view. Hidden on screen (see SchedulePrintView.css); revealed only
 // inside @media print, alongside the screen-only chrome being hidden there.
-function SchedulePrintView({ dateLabel, rows }) {
+function SchedulePrintView({ dateLabel, rows, notes }) {
   const slots = generateTimeSlots();
 
   return (
@@ -25,7 +34,7 @@ function SchedulePrintView({ dateLabel, rows }) {
         {LEGEND_STATUSES.map((status) => (
           <span key={status} className="schedule-print__legend-item">
             <span className={`schedule-print__swatch schedule-print__swatch--${status}`} />
-            {getStatusLabel(status)}
+            {printStatusLabel(status)}
           </span>
         ))}
       </div>
@@ -45,7 +54,8 @@ function SchedulePrintView({ dateLabel, rows }) {
                   isHourMark ? ' schedule-print__slot-label--hour' : ''
                 }`}
               >
-                {start}-{end}
+                <span className="schedule-print__slot-label-line">{start}-</span>
+                <span className="schedule-print__slot-label-line">{end}</span>
               </div>
             );
           })}
@@ -65,6 +75,12 @@ function SchedulePrintView({ dateLabel, rows }) {
               })}
             </Fragment>
           ))}
+        </div>
+      )}
+
+      {notes && notes.trim() && (
+        <div className="schedule-print__notes">
+          <strong>Notes:</strong> {notes}
         </div>
       )}
 

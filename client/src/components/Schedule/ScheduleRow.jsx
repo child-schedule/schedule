@@ -3,6 +3,7 @@ import { findBlockForSlot } from '../../utils/timeSlots';
 import { useTeachers } from '../../context/TeachersContext';
 import { useClassrooms } from '../../context/ClassroomsContext';
 import { parseRowLabel } from '../../utils/rowLabel';
+import { useShrinkToFit } from '../../hooks/useShrinkToFit';
 
 function ScheduleRow({
   rowLabel,
@@ -43,11 +44,16 @@ function ScheduleRow({
   const classroomName = liveClassroomName || parsedLabel?.classroomName || null;
   const canSplitLabel = Boolean(teacherName && classroomName);
 
+  // Shrinks the label's font-size to fit the fixed-width column, wrapping
+  // only as a last resort — see useShrinkToFit.js. Re-runs whenever the
+  // displayed text itself changes.
+  const labelRef = useShrinkToFit([teacherName, classroomName, rowLabel, canSplitLabel]);
+
   return (
     <div className={`schedule-row${isPlaceholder ? ' schedule-row--placeholder' : ''}`}>
       <div className="schedule-row__label">
         {canSplitLabel ? (
-          <span className="schedule-row__label-text">
+          <span className="schedule-row__label-text" ref={labelRef}>
             <button
               type="button"
               className="schedule-row__name-link"
@@ -65,7 +71,9 @@ function ScheduleRow({
             </button>
           </span>
         ) : (
-          <span className="schedule-row__label-text">{rowLabel}</span>
+          <span className="schedule-row__label-text" ref={labelRef}>
+            {rowLabel}
+          </span>
         )}
         {!isPlaceholder && (
           <button

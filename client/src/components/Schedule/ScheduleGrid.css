@@ -89,6 +89,12 @@
 
 .schedule-row__label {
   flex: 0 0 180px;
+  /* Flex items default to min-width:auto, which for non-wrapping content
+     resolves to the content's own width — without this, a long teacher/
+     classroom name silently grows this box past 180px and pushes that row's
+     time columns out of alignment with the header and every other row. This
+     is the actual root cause of the "columns don't line up" bug. */
+  min-width: 0;
   padding: 0.75rem 0.6rem 0.75rem 0.85rem;
   font-size: 0.9rem;
   font-weight: 600;
@@ -105,9 +111,18 @@
 }
 
 .schedule-row__label-text {
+  /* Shrunk to fit at runtime by useShrinkToFit (see ScheduleRow.jsx) — starts
+     nowrap and steps its font-size down. overflow-wrap/word-break are a hard
+     backstop: even if shrinking still isn't enough and the text wraps, a
+     single very long unbroken word still can't push past the column, so
+     alignment can never break regardless of what name gets typed in. */
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.2;
 }
 
 /* Clickable teacher/classroom name within a row label — opens DayDetailModal
@@ -189,7 +204,10 @@
 .time-block {
   flex: 1 1 0;
   min-width: 0;
-  height: 44px;
+  /* min-height, not a fixed height — lets the row (and every block in it)
+     grow taller when useShrinkToFit's last resort wraps a long label onto a
+     second line, without affecting the height of every other row. */
+  min-height: 44px;
   border-bottom: 1px solid var(--color-border);
   border-right: 1px solid #eceef1;
   cursor: pointer;

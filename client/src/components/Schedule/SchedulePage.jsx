@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSchedule } from '../../hooks/useSchedule';
+import { updateNotes } from '../../api/scheduleApi';
 import AppHeader from '../common/AppHeader';
 import ErrorToast from '../common/ErrorToast';
 import CopyDayModal from './CopyDayModal';
 import CopyPreviousModal from './CopyPreviousModal';
 import SaveConfirmModal from './SaveConfirmModal';
+import NotesModal from './NotesModal';
 import ScheduleGrid from './ScheduleGrid';
 import SchedulePrintView from './SchedulePrintView';
 
@@ -42,6 +44,19 @@ function SchedulePage() {
   const [showCopyPreviousConfirm, setShowCopyPreviousConfirm] = useState(false);
   const [isCopyingPrevious, setIsCopyingPrevious] = useState(false);
   const [copyPreviousError, setCopyPreviousError] = useState(null);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+
+  async function handleSaveNotes(notesText) {
+    setIsSavingNotes(true);
+    try {
+      const updated = await updateNotes(date, notesText);
+      applyScheduleUpdate(updated);
+      setShowNotesModal(false);
+    } finally {
+      setIsSavingNotes(false);
+    }
+  }
 
   async function handleConfirmCopyPrevious() {
     setIsCopyingPrevious(true);
@@ -118,6 +133,15 @@ function SchedulePage() {
               >
                 Print
               </button>
+              <button
+                type="button"
+                className="secondary"
+                disabled={!isPublished}
+                title={isPublished ? undefined : 'Save the schedule before adding notes'}
+                onClick={() => setShowNotesModal(true)}
+              >
+                Notes
+              </button>
             </div>
           )}
         </div>
@@ -128,7 +152,9 @@ function SchedulePage() {
             <ScheduleGrid schedule={schedule} date={date} onScheduleUpdate={applyScheduleUpdate} />
           )}
         </div>
-        {!isLoading && <SchedulePrintView dateLabel={formatLongDate(date)} rows={schedule.rows} />}
+        {!isLoading && (
+          <SchedulePrintView dateLabel={formatLongDate(date)} rows={schedule.rows} notes={schedule.notes} />
+        )}
         <CopyDayModal
           isOpen={showCopyModal}
           previousDateKey={previousDateKey}
@@ -147,6 +173,14 @@ function SchedulePage() {
           onCancel={() => setShowCopyPreviousConfirm(false)}
         />
         <ErrorToast message={copyPreviousError} onDismiss={() => setCopyPreviousError(null)} />
+        <NotesModal
+          key={showNotesModal ? 'notes-open' : 'notes-closed'}
+          isOpen={showNotesModal}
+          notes={schedule?.notes}
+          isSaving={isSavingNotes}
+          onSave={handleSaveNotes}
+          onCancel={() => setShowNotesModal(false)}
+        />
       </main>
     </>
   );

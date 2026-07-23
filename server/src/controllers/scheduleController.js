@@ -205,6 +205,29 @@ async function applyDraft(req, res, next) {
   }
 }
 
+// Saves the day's note. Independent of the draft/apply workflow — a note can
+// be written any time the schedule exists, and is only ever surfaced on the
+// printed page (gated in the UI behind isPublished, same as the Print button
+// itself, but not enforced here — the schedule already has to exist).
+async function updateNotes(req, res, next) {
+  try {
+    const { date } = req.params;
+    const { notes } = req.body;
+    if (typeof notes !== 'string') {
+      return res.status(400).json({ error: 'notes must be a string' });
+    }
+
+    const schedule = await Schedule.findOne({ date });
+    if (!schedule) return res.status(404).json({ error: 'Schedule not found' });
+
+    schedule.notes = notes.trim();
+    await schedule.save();
+    res.status(200).json(schedule);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getSchedule,
   createSchedule,
@@ -214,4 +237,5 @@ module.exports = {
   deleteBlock,
   deleteRow,
   applyDraft,
+  updateNotes,
 };

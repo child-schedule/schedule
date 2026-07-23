@@ -26,6 +26,9 @@ const scheduleSchema = new mongoose.Schema({
   // backfills draftRows = rows the first time such a document is read.
   rows: { type: [rowSchema], default: [] },
   draftRows: { type: [rowSchema], default: [] },
+  // Free-text note for the day, shown at the bottom of the printed schedule.
+  // One overwritable note per date, independent of the draft/apply workflow.
+  notes: { type: String, default: '' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Schedule', scheduleSchema);

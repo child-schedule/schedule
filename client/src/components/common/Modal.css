@@ -43,6 +43,17 @@
   }
 }
 
+.notes-modal__textarea {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #d0d2d8;
+  border-radius: 6px;
+  font: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

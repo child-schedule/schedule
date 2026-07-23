@@ -43,3 +43,9 @@ export async function applySchedule(date) {
   const { data } = await axios.post(`${API_BASE_URL}/api/schedule/${date}/apply`);
   return data;
 }
+
+// Saves the day's printable note (one overwritable note per date).
+export async function updateNotes(date, notes) {
+  const { data } = await axios.patch(`${API_BASE_URL}/api/schedule/${date}/notes`, { notes });
+  return data;
+}
